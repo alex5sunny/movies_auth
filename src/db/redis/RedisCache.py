@@ -1,9 +1,8 @@
 from typing import Optional
 
-from redis.asyncio import Redis
-
 from core.config import settings
 from db.Cache import Cache
+from redis.asyncio import Redis
 
 
 class RedisCache(Cache):
