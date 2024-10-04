@@ -20,19 +20,17 @@ class PostgresStorage(Storage):
             expire_on_commit=False
         )
 
-    async def __create_schema__(self) -> None:
-        async with self.postgres.begin() as session:
-            await session.run_sync(Base.metadata.create_all)
+    async def create_schema(self) -> None:
+        async with self.postgres.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    async def __purge_database__(self) -> None:
+    async def purge_schema(self) -> None:
         async with self.postgres.begin() as conn:
             await conn.run_sync(Base.metadata.drop_all)
 
     async def open(self):
-        # await self.__create_schema__()
         async with self.async_session() as session:
             yield session
 
     async def close(self):
-        # await self.__purge_database__()
         await self.postgres.dispose()
