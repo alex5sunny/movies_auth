@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     db_host: str = Field('127.0.0.1', alias='DB_HOST')
     db_port: int = Field(5432, alias='DB_PORT')
 
+    secret_key: str = Field('q!@#j4k3l2m9z8y7x6v5u4t3s2r1p0', alias='SECRET_KEY')
+    access_token_lifetime: int = Field(15, alias='ACCESS_TOKEN_LIFETIME')
+    refresh_token_lifetime: int = Field(14400, alias='REFRESH_TOKEN_LIFETIME')
+    algorithm: str = Field('HS256', alias='ALGORITHM')
+
     @property
     def dsn(self) -> dict:
         return {

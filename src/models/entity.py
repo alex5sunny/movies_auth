@@ -1,6 +1,6 @@
 # models/entity.py
 import uuid
-from datetime import datetime, UTC, timezone
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
