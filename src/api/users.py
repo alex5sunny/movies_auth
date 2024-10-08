@@ -1,10 +1,16 @@
 from http import HTTPStatus
+from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.postgres import get_session
+from models.entity import User
+
+from services.users import get_user_service, UserService
 
 router = APIRouter()
 
@@ -25,26 +31,37 @@ class UserInDB(BaseModel):
         orm_mode = True
 
 
+class UserLogin(BaseModel):
+    login: str
+    password: str
+
+    class Config:
+        orm_mode = True
+
+
+class Token:
+    token: Optional[str]
+    status: int
+
+
 @router.post('/signup', response_model=UserInDB, status_code=HTTPStatus.CREATED)
-async def create_user(user_create: UserCreate, db: AsyncSession = Depends(get_session)) -> UserInDB:
+async def create_user(
+        user_create: UserCreate, db: AsyncSession = Depends(get_session)
+):
     user_dto = jsonable_encoder(user_create)
-    user = UserInDB(**user_dto)
+    user = User(**user_dto)
     db.add(user)
     await db.commit()
     await db.refresh(user)
     return user
 
 
-@router.get(
+@router.post(
     path='/signin',
-    summary="Login",
-    description="Login by email and password."
 )
 async def login_user(
-        email: str,
-        password: str,
-        user_device_type: DeviceType = Query(..., alias="user_device_type"),
+        user_login: UserLogin,
         service: UserService = Depends(get_user_service)
-) -> Response:
-    response: dict = await service.authenticate(email, password, user_device_type)
-    return get_tokens_response(response)
+) -> dict:
+    response = await service.check_user(user_login)
+    return response

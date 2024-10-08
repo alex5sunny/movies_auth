@@ -1,12 +1,12 @@
 # models/entity.py
 import uuid
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from db.postgres.Base import Base
+from db.postgres import Base
 
 
 class User(Base):
@@ -19,7 +19,9 @@ class User(Base):
     password = Column(String(255), nullable=False)
     first_name = Column(String(50))
     last_name = Column(String(50))
-    created_at = Column(DateTime, default=datetime.now(UTC))
+    created_at = Column(
+        DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
+    )
 
     def __init__(
             self, login: str, password: str, first_name: str, last_name: str

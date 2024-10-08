@@ -5,25 +5,25 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
+from api import users
 from core.config import settings
 from core.logger import LOGGING
 from db import db_cache
-from db import db_storage
+from db.postgres import create_database, purge_database
 from db.redis.RedisCache import RedisCache
-from db.postgres.PostgresStorage import PostgresStorage
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_cache.cache = RedisCache(settings.redis_host, settings.redis_port)
-    db_storage.storage = PostgresStorage()
-    db_storage.storage.open()
+    # from models.entity import User  # necessary to create table
+    # from models.refresh_token import RefreshToken
+    # await create_database()
 
     yield
 
     await db_cache.cache.close()
-    if db_storage.storage:
-        await db_storage.storage.close()
+    await purge_database()
 
 
 app = FastAPI(
@@ -33,6 +33,8 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     lifespan=lifespan
 )
+
+app.include_router(users.router, prefix='/api/users', tags=['users'])
 
 if __name__ == '__main__':
     uvicorn.run(

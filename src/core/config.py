@@ -9,20 +9,25 @@ logging_config.dictConfig(LOGGING)
 
 
 class Settings(BaseSettings):
-    project_name: str = Field('movies_auth', env='PROJECT_NAME')
+    project_name: str = Field('movies_auth', alias='PROJECT_NAME')
 
-    redis_host: str = Field('redis', env='REDIS_HOST')
-    redis_port: int = Field(6379, env='REDIS_PORT')
+    redis_host: str = Field('redis', alias='REDIS_HOST')
+    redis_port: int = Field(6379, alias='REDIS_PORT')
 
     base_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     cache_expire_in_seconds: int = 5
 
-    postgres_db: str = Field('postgres', env='POSTGRES_DB')
-    postgres_user: str = Field('postgres', env='POSTGRES_USER')
-    postgres_password: str = Field('postgres', env='POSTGRES_PASSWORD')
-    db_host: str = Field('127.0.0.1', env='DB_HOST')
-    db_port: int = Field(5434, env='DB_PORT')
+    postgres_db: str = Field('postgres', alias='POSTGRES_DB')
+    postgres_user: str = Field('postgres', alias='POSTGRES_USER')
+    postgres_password: str = Field('postgres', alias='POSTGRES_PASSWORD')
+    db_host: str = Field('127.0.0.1', alias='DB_HOST')
+    db_port: int = Field(5432, alias='DB_PORT')
+
+    secret_key: str = Field('q!@#j4k3l2m9z8y7x6v5u4t3s2r1p0', alias='SECRET_KEY')
+    access_token_lifetime: int = Field(15, alias='ACCESS_TOKEN_LIFETIME')
+    refresh_token_lifetime: int = Field(14400, alias='REFRESH_TOKEN_LIFETIME')
+    algorithm: str = Field('HS256', alias='ALGORITHM')
 
     @property
     def dsn(self) -> dict:
