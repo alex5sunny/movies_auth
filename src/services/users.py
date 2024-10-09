@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from functools import lru_cache
 from http import HTTPStatus
 
-from jose import jwt
-from fastapi import Depends
+from jose import jwt, JWTError
+from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from werkzeug.security import check_password_hash
@@ -28,9 +28,14 @@ class UserService:
                 login=user_data.login
             )
         )
-        user = result.scalars().first()
+        user = None
+        if result:
+            user = result.scalars().first()
 
-        if check_password_hash(user.password, user_data.password):
+        if user and check_password_hash(
+                user.password,
+                user_data.password
+        ):
             access_token = self._get_token(
                 user.login,
                 settings.access_token_lifetime
@@ -57,10 +62,24 @@ class UserService:
             expires_at=(datetime.datetime.now()
                         + datetime.timedelta(
                         minutes=settings.refresh_token_lifetime
-                        )))
+                    )))
         self.session.add(refresh_token)
 
-        await self.session.commit()
+    @staticmethod
+    async def decode_jwt(token: str) -> dict:
+        try:
+            payload = jwt.decode(token, settings.secret_key, algorithms=settings.algorithm)
+            expire = datetime.datetime.strptime(payload.get('expire'), "%Y-%m-%d %H:%M:%S.%f")
+
+            if datetime.datetime.now() < expire:
+                return {'user': payload.get('user')}
+            return {'data': 'token expired!'}
+
+        except JWTError:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid or expired token",
+            )
 
     @staticmethod
     def _get_token(login, lifetime):
