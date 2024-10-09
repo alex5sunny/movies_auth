@@ -16,9 +16,8 @@ from db.redis.RedisCache import RedisCache
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_cache.cache = RedisCache(settings.redis_host, settings.redis_port)
-    # from models.entity import User  # necessary to create table
-    # from models.refresh_token import RefreshToken
-    # await create_database()
+    import models
+    await create_database()
 
     yield
 

@@ -28,20 +28,16 @@ class UserInDB(BaseModel):
     last_name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class UserLogin(BaseModel):
     login: str
     password: str
 
-    class Config:
-        orm_mode = True
 
-
-class Token:
+class Token(BaseModel):
     token: Optional[str]
-    status: int
 
 
 @router.post('/signup', response_model=UserInDB, status_code=HTTPStatus.CREATED)
@@ -64,4 +60,16 @@ async def login_user(
         service: UserService = Depends(get_user_service)
 ) -> dict:
     response = await service.check_user(user_login)
+    return response
+
+
+@router.post(
+    path='/check_token'
+)
+async def check_token(
+        token: Token,
+        service: UserService = Depends(get_user_service)
+):
+    response = await service.decode_jwt(token.token)
+
     return response
