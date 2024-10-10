@@ -17,7 +17,7 @@ from db.redis.RedisCache import RedisCache
 async def lifespan(app: FastAPI):
     db_cache.cache = RedisCache()
     import models
-    await create_database()
+    # await create_database()
 
     yield
 
