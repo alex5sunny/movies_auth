@@ -4,6 +4,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -58,7 +59,7 @@ async def create_user(
 async def login_user(
         user_login: UserLogin,
         service: UserService = Depends(get_user_service)
-) -> dict:
+) -> ORJSONResponse:
     response = await service.check_user(user_login)
     return response
 
@@ -69,7 +70,17 @@ async def login_user(
 async def check_token(
         token: Token,
         service: UserService = Depends(get_user_service)
-):
+) -> ORJSONResponse:
     response = await service.decode_jwt(token.token)
+
+    return response
+
+
+@router.post(path='/logout')
+async def logout(
+        token: Token,
+        service: UserService = Depends(get_user_service)
+) -> ORJSONResponse:
+    response = await service.logout(token.token)
 
     return response

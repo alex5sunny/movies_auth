@@ -7,8 +7,8 @@ from redis.asyncio import Redis
 
 class RedisCache(Cache):
 
-    def __init__(self, host: str, port: int):
-        self.redis = Redis(host=host, port=port)
+    def __init__(self):
+        self.redis = Redis(host=settings.redis_host, port=settings.redis_port)
 
     async def get(self, key) -> Optional[str]:
         return await self.redis.get(key)
