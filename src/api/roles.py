@@ -7,9 +7,11 @@ from services.roles import RoleService, get_role_service
 
 router = APIRouter()
 
+
 class RoleCreate(BaseModel):
     name: str
     description: Optional[str] = None
+
 
 class RoleInDB(BaseModel):
     id: int
@@ -30,6 +32,7 @@ async def create_role(
         return new_role
     except HTTPException as e:
         raise HTTPException(status_code=e.status_code, detail=e.detail)
+
 
 
 @router.get("/roles/", response_model=list[RoleInDB])
