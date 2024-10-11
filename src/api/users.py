@@ -76,6 +76,17 @@ async def check_token(
     return response
 
 
+@router.post(
+    path='/refresh',
+)
+async def refresh_token(
+        token: Token,
+        service: UserService = Depends(get_user_service)):
+    response = await service.decode_jwt(token.token)
+
+    return response
+
+
 @router.post(path='/logout')
 async def logout(
         token: Token,

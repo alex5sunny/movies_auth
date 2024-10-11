@@ -16,13 +16,10 @@ from db.redis.RedisCache import RedisCache
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     db_cache.cache = RedisCache()
-    import models
-    # await create_database()
 
     yield
 
     await db_cache.cache.close()
-    # await purge_database()
 
 
 app = FastAPI(
