@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from db.postgres import Base
@@ -22,6 +23,7 @@ class User(Base):
     created_at = Column(
         DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
     )
+    roles = relationship("UserRole", back_populates="user")
 
     def __init__(
             self, login: str, password: str, first_name: str, last_name: str

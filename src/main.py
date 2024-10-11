@@ -5,7 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from api import users
+from api import users, roles
 from core.config import settings
 from core.logger import LOGGING
 from db import db_cache
@@ -34,6 +34,7 @@ app = FastAPI(
 )
 
 app.include_router(users.router, prefix='/api/users', tags=['users'])
+app.include_router(roles.router, prefix='/api/roles', tags=['roles'])
 
 if __name__ == '__main__':
     uvicorn.run(
