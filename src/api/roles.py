@@ -9,8 +9,10 @@ from models.role import Role
 
 router = APIRouter()
 
+
 class RoleCreate(BaseModel):
     name: str
+
 
 class RoleInDB(BaseModel):
     id: int
@@ -18,6 +20,7 @@ class RoleInDB(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 @router.post("/roles/", response_model=RoleInDB, status_code=HTTPStatus.CREATED)
 async def create_role(role: RoleCreate, db: AsyncSession = Depends(get_session)):
@@ -33,6 +36,7 @@ async def create_role(role: RoleCreate, db: AsyncSession = Depends(get_session))
     await db.commit()
     await db.refresh(new_role)
     return new_role
+
 
 @router.get("/roles/", response_model=list[RoleInDB])
 async def get_roles(db: AsyncSession = Depends(get_session)):

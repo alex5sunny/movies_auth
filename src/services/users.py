@@ -41,26 +41,8 @@ class UserService:
                 user.password,
                 user_data.password
         ):
-            access_token = self._get_token(
-                user.login,
-                settings.access_token_lifetime
-            )
-            refresh_token = self._get_token(
-                user.login,
-                settings.refresh_token_lifetime
-            )
-
-            await self.save_refresh_token(refresh_token, user)
-
-            return ORJSONResponse({
-                'token': access_token,
-                'refresh_token': refresh_token,
-            }, HTTPStatus.OK)
-
-        return ORJSONResponse(
-            {'message': 'Invalid login or password!'},
-            HTTPStatus.UNAUTHORIZED
-        )
+            token_pair = await self.get_token_pair(user)
+            return token_pair
 
     async def save_refresh_token(self, token: str, user) -> None:
         refresh_token = RefreshToken(
@@ -79,33 +61,68 @@ class UserService:
         except Exception as e:
             raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
-    async def decode_jwt(self, token: str) -> ORJSONResponse:
+    async def decode_access_token(self, token: str) -> ORJSONResponse:
+        token_in_storage = await self.redis.get(f'token:{token}')
+
+        if token_in_storage:
+            logging.debug(
+                f'TOKEN EXPIRED: current time: logout: {token_in_storage is None}')
+            return ORJSONResponse({'data': 'token expired!'}, HTTPStatus.UNAUTHORIZED)
+
+        data = await self.decode_token_jwt(token)
+        return ORJSONResponse(data, status_code=HTTPStatus.OK)
+
+    async def decode_refresh_token(self, refresh_token: str) -> ORJSONResponse:
+        data = await self.decode_token_jwt(refresh_token)
+        user = data.get('user')
+
+        if user:
+            token_pair = await self.get_token_pair(user)
+            return token_pair
+
+    async def get_token_pair(self, user):
+        access_token = self._get_token(
+            user,
+            settings.access_token_lifetime
+        )
+        refresh_token = self._get_token(
+            user,
+            settings.refresh_token_lifetime
+        )
+
+        await self.save_refresh_token(refresh_token, user)
+
+        return ORJSONResponse({
+            'token': access_token,
+            'refresh_token': refresh_token,
+        }, HTTPStatus.OK)
+
+    @staticmethod
+    async def decode_token_jwt(token: str):
         try:
             payload = jwt.decode(token, settings.secret_key, algorithms=settings.algorithm)
             expire = datetime.datetime.strptime(payload.get('expire'), "%Y-%m-%d %H:%M:%S.%f")
-            token_in_storage = await self.redis.get(f'token:{token}')
-
-            if datetime.datetime.now() > expire or token_in_storage:
+            if datetime.datetime.now() > expire:
                 logging.debug(
                     f'TOKEN EXPIRED: current time: {datetime.datetime.now()},'
-                    f' expired: {expire}, logout: {token_in_storage is None}'
+                    f' expired: {expire}'
                 )
                 return ORJSONResponse({'data': 'token expired!'}, HTTPStatus.UNAUTHORIZED)
 
-            return ORJSONResponse({'user': payload.get('user')}, HTTPStatus.OK)
+            return {
+                'user': payload.get('user'),
+                'role': payload.get('role')
+            }
 
         except JWTError:
-            raise HTTPException(
-                status_code=401,
-                detail="Invalid token",
-            )
+            HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Invalid token!')
 
     @staticmethod
-    def _get_token(login, lifetime):
+    def _get_token(user, lifetime):
         expire = datetime.datetime.now() + datetime.timedelta(
             seconds=lifetime
         )
-        data = {'user': login, 'expire': str(expire)}
+        data = {'user': user.login, 'role': user.role, 'expire': str(expire)}
 
         token = jwt.encode(
             data,
