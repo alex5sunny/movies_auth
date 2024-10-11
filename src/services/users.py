@@ -111,7 +111,7 @@ class UserService:
 
             return {
                 'user': payload.get('user'),
-                'role': payload.get('role')
+                'roles': payload.get('roles')
             }
 
         except JWTError:
