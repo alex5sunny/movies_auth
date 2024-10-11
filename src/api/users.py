@@ -71,7 +71,7 @@ async def check_token(
         token: Token,
         service: UserService = Depends(get_user_service)
 ) -> ORJSONResponse:
-    response = await service.decode_jwt(token.token)
+    response = await service.decode_access_token(token.token)
 
     return response
 
@@ -82,7 +82,7 @@ async def check_token(
 async def refresh_token(
         token: Token,
         service: UserService = Depends(get_user_service)):
-    response = await service.decode_jwt(token.token)
+    response = await service.decode_refresh_token(token.token)
 
     return response
 
