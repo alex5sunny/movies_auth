@@ -15,7 +15,7 @@ from werkzeug.security import check_password_hash
 from db.Cache import Cache
 from db.postgres import get_session
 from db.redis.RedisCache import RedisCache
-from models.user import User
+from models.user import User, UserLogin
 
 from core.config import settings
 
@@ -41,6 +41,7 @@ class UserService:
                 user.password,
                 user_data.password
         ):
+            self.pg_session.add(UserLogin(user_id=user.id))
             token_pair = await self.get_token_pair(user)
             return token_pair
 
