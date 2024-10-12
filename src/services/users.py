@@ -15,7 +15,7 @@ from werkzeug.security import check_password_hash
 from db.Cache import Cache
 from db.postgres import get_session
 from db.redis.RedisCache import RedisCache
-from models.entity import User
+from models.user import User
 
 from core.config import settings
 

@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
-from models.entity import User
+from models.user import User
 
 from services.users import get_user_service, UserService
 

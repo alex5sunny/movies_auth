@@ -1,8 +1,8 @@
-# models/entity.py
+# models/user.py
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Column, DateTime, String, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -23,7 +23,8 @@ class User(Base):
     created_at = Column(
         DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
     )
-    roles = relationship("UserRole", back_populates="user")
+    roles = relationship('UserRole', back_populates='user')
+    user_logins = relationship('UserLogin', back_populates='user')
 
     def __init__(
             self, login: str, password: str, first_name: str, last_name: str
@@ -38,3 +39,24 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f'<User {self.login}>'
+
+
+class UserLogin(Base):
+
+    __tablename__ = 'users_logins'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,
+                unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    login_at = Column(
+        DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
+    )
+    user = relationship('User', back_populates='user_logins')
+
+    def __init__(
+            self, user_id: uuid.UUID
+    ) -> None:
+        self.user_id = user_id
+
+    def __repr__(self) -> str:
+        return f'<user {self.user.login} login {self.login_at}>'

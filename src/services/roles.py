@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from models.role import Role
-from models.entity import User
+from models.user import User
 from db.postgres import get_session
 
 
