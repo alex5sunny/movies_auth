@@ -1,8 +1,16 @@
 import uuid
-from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy import Column, String, ForeignKey, Table
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from db.postgres import Base
+
+
+user_roles_table = Table(
+    'user_roles', Base.metadata,
+    Column('user_id', UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True),
+    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+)
+
 
 class Role(Base):
     __tablename__ = "roles"
@@ -18,28 +26,6 @@ class Role(Base):
     description = Column(String(500), nullable=True)
 
     users = relationship(
-        "User",
-        secondary="user_roles",
-        primaryjoin="Role.id == UserRole.role_id",
-        secondaryjoin="UserRole.user_id == User.id",
-        back_populates="roles",
-        lazy="selectin",
+        'User', secondary=user_roles_table, back_populates='roles'
     )
 
-
-class UserRole(Base):
-    __tablename__ = "user_roles"
-
-    id = Column(
-        UUID(as_uuid=True),
-        primary_key=True,
-        default=uuid.uuid4,
-        unique=True,
-        nullable=False,
-    )
-    user_id = Column(UUID(as_uuid=True),
-                     ForeignKey("users.id"),
-                     nullable=False)
-    role_id = Column(UUID(as_uuid=True),
-                     ForeignKey("roles.id"),
-                     nullable=False)

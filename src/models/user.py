@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from db.postgres import Base
+from models.role import user_roles_table
 
 
 class User(Base):
@@ -23,7 +24,9 @@ class User(Base):
     created_at = Column(
         DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
     )
-    roles = relationship('UserRole', back_populates='user')
+    roles = relationship(
+        'Role', secondary=user_roles_table, back_populates='users'
+    )
     user_logins = relationship('UserLogin', back_populates='user')
 
     def __init__(

@@ -70,7 +70,7 @@ async def login_user(
     return response
 
 
-@router.post(
+@router.get(
     path='/signin_history', response_model=list[UserSignin]
 )
 async def signin_history(
@@ -80,7 +80,10 @@ async def signin_history(
         service: UserService = Depends(get_user_service)
 ) -> Any:
     response = await service.login_history(login, page_number, page_size)
-    return [UserSignin(**user_login.to_dict()) for user_login in response]
+    return [UserSignin(
+                login_at=user_login.login_at,
+                signin_data=user_login.signin_data
+            )  for user_login in response]
 
 
 @router.post(

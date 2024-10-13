@@ -10,6 +10,7 @@ from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
 from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from werkzeug.security import check_password_hash
 
 from db.Cache import Cache
@@ -29,7 +30,7 @@ class UserService:
 
     async def check_user(self, user_data) -> ORJSONResponse:
         result = await self.pg_session.execute(
-            select(User).filter_by(
+            select(User).options(selectinload(User.roles)).filter_by(
                 login=user_data.login
             )
         )
@@ -42,6 +43,7 @@ class UserService:
                 user_data.password
         ):
             self.pg_session.add(UserLogin(user_id=user.id))
+            await self.pg_session.commit()
             token_pair = await self.get_token_pair(user)
             return token_pair
 
@@ -67,7 +69,7 @@ class UserService:
         result = await self.pg_session.execute(
             select(UserLogin).filter_by(user_id=user.id).order_by(
                 desc(UserLogin.login_at)
-            ).offset(page_number * page_size).limit(page_size)
+            ).offset((page_number - 1) * page_size).limit(page_size)
         )
         return list(result.scalars().all())
 
@@ -139,7 +141,7 @@ class UserService:
         expire = datetime.datetime.now() + datetime.timedelta(
             seconds=lifetime
         )
-        data = {'user': user.login, 'role': user.role, 'expire': str(expire)}
+        data = {'user': user.login, 'roles': user.roles, 'expire': str(expire)}
 
         token = jwt.encode(
             data,
