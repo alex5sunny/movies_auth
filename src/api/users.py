@@ -1,8 +1,8 @@
 from http import HTTPStatus
-from typing import Optional
+from typing import Optional, Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
@@ -61,6 +61,19 @@ async def login_user(
         service: UserService = Depends(get_user_service)
 ) -> ORJSONResponse:
     response = await service.check_user(user_login)
+    return response
+
+
+@router.post(
+    path='/signin_history',
+)
+async def signin_history(
+        login: str,
+        page_number: Annotated[int, Query(title="Page number", ge=1)] = 1,
+        page_size: Annotated[int, Query(title="Page size", ge=2, le=100)] = 50,
+        service: UserService = Depends(get_user_service)
+) -> ORJSONResponse:
+    response = await service.login_history(login, page_number, page_size)
     return response
 
 

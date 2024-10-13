@@ -8,7 +8,7 @@ from http import HTTPStatus
 from fastapi.responses import ORJSONResponse
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from werkzeug.security import check_password_hash
 
@@ -54,6 +54,26 @@ class UserService:
                         minutes=settings.refresh_token_lifetime
                     )))
         self.pg_session.add(refresh_token)
+
+    async def login_history(
+            self, login: str, page_number: int, page_size: int
+    ) -> ORJSONResponse:
+        result = await self.pg_session.execute(
+            select(User).filter_by(login=login)
+        )
+        if not result:
+            return ORJSONResponse(
+                {'error': f'no user with login {login}'},
+                status_code=HTTPStatus.NOT_FOUND
+            )
+        user = result.scalars().first()
+        user_logins = await self.pg_session.execute(
+            select(UserLogin).filter_by(user_id=user.id).order_by(
+                desc(UserLogin.login_at)
+            ).offset(page_number * page_size).limit(page_size)
+        )
+
+        return ORJSONResponse({}, status_code=HTTPStatus.OK)
 
     async def logout(self, token: str) -> ORJSONResponse:
         try:
