@@ -57,23 +57,19 @@ class UserService:
 
     async def login_history(
             self, login: str, page_number: int, page_size: int
-    ) -> ORJSONResponse:
+    ) -> list[UserLogin]:
         result = await self.pg_session.execute(
             select(User).filter_by(login=login)
         )
         if not result:
-            return ORJSONResponse(
-                {'error': f'no user with login {login}'},
-                status_code=HTTPStatus.NOT_FOUND
-            )
+            return []
         user = result.scalars().first()
-        user_logins = await self.pg_session.execute(
+        result = await self.pg_session.execute(
             select(UserLogin).filter_by(user_id=user.id).order_by(
                 desc(UserLogin.login_at)
             ).offset(page_number * page_size).limit(page_size)
         )
-
-        return ORJSONResponse({}, status_code=HTTPStatus.OK)
+        return list(result.scalars().all())
 
     async def logout(self, token: str) -> ORJSONResponse:
         try:

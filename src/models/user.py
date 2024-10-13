@@ -48,15 +48,18 @@ class UserLogin(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,
                 unique=True, nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    signin_data = Column(String(255))
     login_at = Column(
         DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
     )
     user = relationship('User', back_populates='user_logins')
 
     def __init__(
-            self, user_id: uuid.UUID
+            self, user_id: uuid.UUID, signin_data = ''
     ) -> None:
         self.user_id = user_id
+        self.signin_data = signin_data
 
     def __repr__(self) -> str:
-        return f'<user {self.user.login} login {self.login_at}>'
+        return (f'<user:{self.user.login} login:{self.login_at} '
+                f'user data:{self.signin_data}>')

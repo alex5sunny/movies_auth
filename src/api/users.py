@@ -1,5 +1,6 @@
+from datetime import datetime
 from http import HTTPStatus
-from typing import Optional, Annotated
+from typing import Optional, Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
@@ -37,6 +38,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserSignin(BaseModel):
+    login_at: datetime
+    signin_data: str
+
+
 class Token(BaseModel):
     token: Optional[str]
 
@@ -65,16 +71,16 @@ async def login_user(
 
 
 @router.post(
-    path='/signin_history',
+    path='/signin_history', response_model=list[UserSignin]
 )
 async def signin_history(
         login: str,
         page_number: Annotated[int, Query(title="Page number", ge=1)] = 1,
         page_size: Annotated[int, Query(title="Page size", ge=2, le=100)] = 50,
         service: UserService = Depends(get_user_service)
-) -> ORJSONResponse:
+) -> Any:
     response = await service.login_history(login, page_number, page_size)
-    return response
+    return [UserSignin(**user_login.to_dict()) for user_login in response]
 
 
 @router.post(
