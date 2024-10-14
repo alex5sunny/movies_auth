@@ -1,7 +1,7 @@
 from typing import Optional
 
 from core.config import settings
-from db.Cache import Cache
+from db.cache import Cache
 from redis.asyncio import Redis
 
 

@@ -2,15 +2,15 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 
 from api import users, roles
-from core.config import settings
+from core.config import settings, Settings
 from core.logger import LOGGING
 from db import db_cache
 from db.postgres import create_database, purge_database
-from db.redis.RedisCache import RedisCache
+from db.redis.redis_cache import RedisCache
 
 
 @asynccontextmanager
@@ -29,6 +29,7 @@ app = FastAPI(
     default_response_class=ORJSONResponse,
     lifespan=lifespan
 )
+
 
 app.include_router(users.router, prefix='/api/users', tags=['users'])
 app.include_router(roles.router, prefix='/api/roles', tags=['roles'])

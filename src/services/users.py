@@ -13,9 +13,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from werkzeug.security import check_password_hash
 
-from db.Cache import Cache
+from db.cache import Cache
 from db.postgres import get_session
-from db.redis.RedisCache import RedisCache
+from db.redis.redis_cache import RedisCache
 from models.user import User, UserLogin
 
 from core.config import settings
@@ -120,6 +120,7 @@ class UserService:
     async def decode_token_jwt(token: str):
         try:
             payload = jwt.decode(token, settings.secret_key, algorithms=settings.algorithm)
+            logging.info(f'________________________________________________________{payload.get("jti")}')
             expire = datetime.datetime.strptime(payload.get('expire'), "%Y-%m-%d %H:%M:%S.%f")
             if datetime.datetime.now() > expire:
                 logging.debug(

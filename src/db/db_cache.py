@@ -1,6 +1,6 @@
 from typing import Optional
 
-from db.Cache import Cache
+from db.cache import Cache
 
 cache: Optional[Cache] = None
 
