@@ -10,21 +10,26 @@ from sqlalchemy.future import select
 from models.role import Role
 from models.user import User
 from db.postgres import get_session
+from services.users import get_current_user
 
 
 @dataclass
 class RoleService:
     pg_session: AsyncSession
 
-    async def create_role(self, name: str, description: Optional[str] = None) -> Role:
+    async def create_role(self, name: str, description: Optional[str] = None,
+                          current_user: User = Depends(
+                              get_current_user)) -> Role:
+        if not current_user.is_superuser:
+            raise HTTPException(status_code=403,
+                                detail="You do not have permission to create roles.")
+
         existing_role = await self.pg_session.execute(
             select(Role).filter_by(name=name)
         )
         if existing_role.scalars().first():
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Role with this name already exists."
-            )
+            raise HTTPException(status_code=400,
+                                detail="Role with this name already exists.")
 
         new_role = Role(name=name, description=description)
         self.pg_session.add(new_role)
