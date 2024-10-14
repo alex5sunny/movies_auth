@@ -1,5 +1,6 @@
 import datetime
 import logging
+import uuid
 
 from dataclasses import dataclass
 from functools import lru_cache
@@ -75,19 +76,17 @@ class UserService:
 
     async def logout(self, token: str) -> ORJSONResponse:
         try:
-            await self.redis.put(f'token:{token}', token, settings.access_token_lifetime)
+            payload = await self.decode_token_jwt(token)
+            jti = payload.get('jti')
+
+            await self.redis.put(f'token:{jti}', token, settings.access_token_lifetime)
+
             return ORJSONResponse({'logout': 'Successfully!'}, status_code=HTTPStatus.OK)
+
         except Exception as e:
             raise HTTPException(status_code=HTTPStatus.INTERNAL_SERVER_ERROR, detail=str(e))
 
     async def decode_access_token(self, token: str) -> ORJSONResponse:
-        token_in_storage = await self.redis.get(f'token:{token}')
-
-        if token_in_storage:
-            logging.debug(
-                f'TOKEN EXPIRED: current time: logout: {token_in_storage is None}')
-            return ORJSONResponse({'data': 'token expired!'}, HTTPStatus.UNAUTHORIZED)
-
         data = await self.decode_token_jwt(token)
         return ORJSONResponse(data, status_code=HTTPStatus.OK)
 
@@ -100,12 +99,17 @@ class UserService:
             return token_pair
 
     async def get_token_pair(self, user):
+        data = {
+            'user': user.login,
+            'roles': user.roles,
+            'jti': str(uuid.uuid4())
+        }
         access_token = self._get_token(
-            user,
+            data,
             settings.access_token_lifetime
         )
         refresh_token = self._get_token(
-            user,
+            data,
             settings.refresh_token_lifetime
         )
 
@@ -116,33 +120,34 @@ class UserService:
             'refresh_token': refresh_token,
         }, HTTPStatus.OK)
 
-    @staticmethod
-    async def decode_token_jwt(token: str):
+    async def decode_token_jwt(self, token: str):
         try:
             payload = jwt.decode(token, settings.secret_key, algorithms=settings.algorithm)
-            logging.info(f'________________________________________________________{payload.get("jti")}')
             expire = datetime.datetime.strptime(payload.get('expire'), "%Y-%m-%d %H:%M:%S.%f")
-            if datetime.datetime.now() > expire:
+            token_in_storage = await self.redis.get(f'token:{payload.get("jti")}')
+
+            if datetime.datetime.now() > expire or token_in_storage:
                 logging.debug(
                     f'TOKEN EXPIRED: current time: {datetime.datetime.now()},'
                     f' expired: {expire}'
                 )
-                return ORJSONResponse({'data': 'token expired!'}, HTTPStatus.UNAUTHORIZED)
+                return {'data': 'token expired!'}
 
             return {
                 'user': payload.get('user'),
-                'roles': payload.get('roles')
+                'roles': payload.get('roles'),
+                'jti': payload.get('jti')
             }
 
         except JWTError:
             HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail='Invalid token!')
 
     @staticmethod
-    def _get_token(user, lifetime):
+    def _get_token(data, lifetime):
         expire = datetime.datetime.now() + datetime.timedelta(
             seconds=lifetime
         )
-        data = {'user': user.login, 'roles': user.roles, 'expire': str(expire)}
+        data['expire'] = str(expire)
 
         token = jwt.encode(
             data,
