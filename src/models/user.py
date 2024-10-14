@@ -1,13 +1,14 @@
-# models/entity.py
+# models/user.py
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, String
+from sqlalchemy import Column, DateTime, String, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from db.postgres import Base
+from models.role import user_roles_table
 
 
 class User(Base):
@@ -23,7 +24,10 @@ class User(Base):
     created_at = Column(
         DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
     )
-    roles = relationship("UserRole", back_populates="user")
+    roles = relationship(
+        'Role', secondary=user_roles_table, back_populates='users'
+    )
+    user_logins = relationship('UserLogin', back_populates='user')
 
     def __init__(
             self, login: str, password: str, first_name: str, last_name: str
@@ -38,3 +42,27 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f'<User {self.login}>'
+
+
+class UserLogin(Base):
+
+    __tablename__ = 'users_logins'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4,
+                unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    signin_data = Column(String(255))
+    login_at = Column(
+        DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None)
+    )
+    user = relationship('User', back_populates='user_logins')
+
+    def __init__(
+            self, user_id: uuid.UUID, signin_data = ''
+    ) -> None:
+        self.user_id = user_id
+        self.signin_data = signin_data
+
+    def __repr__(self) -> str:
+        return (f'<user:{self.user.login} login:{self.login_at} '
+                f'user data:{self.signin_data}>')

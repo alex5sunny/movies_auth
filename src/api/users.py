@@ -1,15 +1,16 @@
+from datetime import datetime
 from http import HTTPStatus
-from typing import Optional
+from typing import Optional, Annotated, Any
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import ORJSONResponse
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.postgres import get_session
-from models.entity import User
+from models.user import User
 
 from services.users import get_user_service, UserService
 
@@ -37,6 +38,11 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserSignin(BaseModel):
+    login_at: datetime
+    signin_data: str
+
+
 class Token(BaseModel):
     token: Optional[str]
 
@@ -62,6 +68,22 @@ async def login_user(
 ) -> ORJSONResponse:
     response = await service.check_user(user_login)
     return response
+
+
+@router.get(
+    path='/signin_history', response_model=list[UserSignin]
+)
+async def signin_history(
+        login: str,
+        page_number: Annotated[int, Query(title="Page number", ge=1)] = 1,
+        page_size: Annotated[int, Query(title="Page size", ge=2, le=100)] = 50,
+        service: UserService = Depends(get_user_service)
+) -> Any:
+    response = await service.login_history(login, page_number, page_size)
+    return [UserSignin(
+                login_at=user_login.login_at,
+                signin_data=user_login.signin_data
+            )  for user_login in response]
 
 
 @router.post(

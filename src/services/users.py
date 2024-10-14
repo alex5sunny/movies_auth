@@ -8,14 +8,15 @@ from http import HTTPStatus
 from fastapi.responses import ORJSONResponse
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from werkzeug.security import check_password_hash
 
 from db.Cache import Cache
 from db.postgres import get_session
 from db.redis.RedisCache import RedisCache
-from models.entity import User
+from models.user import User, UserLogin
 
 from core.config import settings
 
@@ -29,7 +30,7 @@ class UserService:
 
     async def check_user(self, user_data) -> ORJSONResponse:
         result = await self.pg_session.execute(
-            select(User).filter_by(
+            select(User).options(selectinload(User.roles)).filter_by(
                 login=user_data.login
             )
         )
@@ -41,6 +42,8 @@ class UserService:
                 user.password,
                 user_data.password
         ):
+            self.pg_session.add(UserLogin(user_id=user.id))
+            await self.pg_session.commit()
             token_pair = await self.get_token_pair(user)
             return token_pair
 
@@ -53,6 +56,22 @@ class UserService:
                         minutes=settings.refresh_token_lifetime
                     )))
         self.pg_session.add(refresh_token)
+
+    async def login_history(
+            self, login: str, page_number: int, page_size: int
+    ) -> list[UserLogin]:
+        result = await self.pg_session.execute(
+            select(User).filter_by(login=login)
+        )
+        if not result:
+            return []
+        user = result.scalars().first()
+        result = await self.pg_session.execute(
+            select(UserLogin).filter_by(user_id=user.id).order_by(
+                desc(UserLogin.login_at)
+            ).offset((page_number - 1) * page_size).limit(page_size)
+        )
+        return list(result.scalars().all())
 
     async def logout(self, token: str) -> ORJSONResponse:
         try:
@@ -122,7 +141,7 @@ class UserService:
         expire = datetime.datetime.now() + datetime.timedelta(
             seconds=lifetime
         )
-        data = {'user': user.login, 'role': user.role, 'expire': str(expire)}
+        data = {'user': user.login, 'roles': user.roles, 'expire': str(expire)}
 
         token = jwt.encode(
             data,
