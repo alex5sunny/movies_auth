@@ -1,9 +1,8 @@
 from typing import List, Optional
 from uuid import UUID
 from dataclasses import dataclass
-from functools import lru_cache
 
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -16,7 +15,11 @@ from db.postgres import get_session
 class RoleService:
     pg_session: AsyncSession
 
-    async def create_role(self, name: str, description: Optional[str] = None) -> Role:
+    async def create_role(
+        self,
+        name: str,
+        description: Optional[str] = None,
+    ) -> Role:
         existing_role = await self.pg_session.execute(
             select(Role).filter_by(name=name)
         )
@@ -40,26 +43,38 @@ class RoleService:
         result = await self.pg_session.execute(select(Role).offset(offset).limit(limit))
         return list(result.scalars().all())
 
-    async def update_role(self, role_id: UUID, name: str, description: Optional[str] = None) -> Optional[Role]:
+    async def update_role(
+        self,
+        role_id: UUID,
+        name: str,
+        description: Optional[str] = None
+    ) -> Role:
         db_role = await self.get_role(role_id)
-        if db_role:
-            db_role.name = name
-            db_role.description = description
-            await self.pg_session.commit()
-            await self.pg_session.refresh(db_role)
-            return db_role
-        return None
+        if not db_role:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Role not found."
+            )
 
-    async def delete_role(self, role_id: UUID) -> bool:
+        db_role.name = name
+        db_role.description = description
+        await self.pg_session.commit()
+        await self.pg_session.refresh(db_role)
+        return db_role
+
+    async def delete_role(self, role_id: UUID) -> None:
         db_role = await self.get_role(role_id)
-        if db_role:
-            await self.pg_session.delete(db_role)
-            await self.pg_session.commit()
-            return True
-        return False
+        if not db_role:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Role not found."
+            )
 
-    async def assign_role_to_user(self, username: str, role_name: str) -> Optional[User]:
-        user = await self.get_user(username)
+        await self.pg_session.delete(db_role)
+        await self.pg_session.commit()
+
+    async def assign_role_to_user(self, login: str, role_name: str) -> User:
+        user = await self.get_user(login)
         role = await self.get_role_by_name(role_name)
         if not user or not role:
             raise HTTPException(
@@ -67,13 +82,19 @@ class RoleService:
                 detail="User or Role not found."
             )
 
+        if role in user.roles:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"User '{login}' already has role '{role_name}'."
+            )
+
         user.roles.append(role)
         await self.pg_session.commit()
         await self.pg_session.refresh(user)
         return user
 
-    async def remove_role_from_user(self, username: str, role_name: str) -> Optional[User]:
-        user = await self.get_user(username)
+    async def remove_role_from_user(self, login: str, role_name: str) -> User:
+        user = await self.get_user(login)
         role = await self.get_role_by_name(role_name)
         if not user or not role:
             raise HTTPException(
@@ -84,7 +105,7 @@ class RoleService:
         if role not in user.roles:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Role '{role_name}' not found for user '{username}'."
+                detail=f"Role '{role_name}' not found for user '{login}'."
             )
 
         user.roles.remove(role)
@@ -92,8 +113,8 @@ class RoleService:
         await self.pg_session.refresh(user)
         return user
 
-    async def get_user(self, username: str) -> Optional[User]:
-        result = await self.pg_session.execute(select(User).filter_by(username=username))
+    async def get_user(self, login: str) -> Optional[User]:
+        result = await self.pg_session.execute(select(User).filter_by(login=login).options())
         return result.scalars().first()
 
     async def get_role_by_name(self, name: str) -> Optional[Role]:
@@ -101,7 +122,7 @@ class RoleService:
         return result.scalars().first()
 
 
-@lru_cache()
-def get_role_service(pg_session: AsyncSession = Depends(get_session)
-                     ) -> RoleService:
+async def get_role_service(
+    pg_session: AsyncSession = Depends(get_session)
+) -> RoleService:
     return RoleService(pg_session)
