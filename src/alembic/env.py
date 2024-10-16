@@ -28,7 +28,7 @@ config.set_main_option(
      f'{env.str("POSTGRES_USER", "default")}:'
      f'{env.str("POSTGRES_PASSWORD", "default")}@'
      f'{env.str("DB_HOST", "127.0.0.1")}:'
-     f'{env.int("DB_PORT", 5432)}/{env.str("DB_NAME", "movies_database")}')
+     f'{env.int("DB_PORT", 5432)}/{env.str("POSTGRES_DB", "movies_database")}')
 )
 
 # other values from the config, defined by the needs of env.py,

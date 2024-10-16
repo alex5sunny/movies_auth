@@ -55,10 +55,12 @@ services:
   db_migrations:
     build:
       context: .
-    env_file: .env
+    env_file:
+      - configs/.env.dev
     command: sh migrate.sh
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 
 volumes:

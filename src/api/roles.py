@@ -6,7 +6,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
 from services.roles import RoleService, get_role_service
-from src.services.decorators import superuser_required
+from services.decorators import superuser_required
 
 router = APIRouter()
 

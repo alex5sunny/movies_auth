@@ -1,6 +1,6 @@
 import typer
-from src.models.user import User
-from src.db.postgres import get_session
+from models.user import User
+from db.postgres import get_session
 from sqlalchemy.exc import SQLAlchemyError
 from werkzeug.security import generate_password_hash
 import asyncio

@@ -3,8 +3,8 @@ from functools import wraps
 from inspect import signature, Parameter
 from http import HTTPStatus
 from typing import Callable
-from src.models.user import User
-from src.services.users import get_current_user
+from models.user import User
+from services.users import get_current_user
 
 def superuser_required(func: Callable) -> Callable:
     @wraps(func)
