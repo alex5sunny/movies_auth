@@ -1,14 +1,19 @@
+import os
+import sys
 from pydantic_settings import BaseSettings
 from pydantic import Field
-import os
 from logging import config as logging_config
-
 from core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
+is_running_under_pytest = "pytest" in sys.modules
 
 
 class Settings(BaseSettings):
+    class Config:
+        env_file = '../configs/.env.dev' if not is_running_under_pytest else '../configs/.env.test'
+        env_file_encoding = 'utf-8'
+
     project_name: str = Field('movies_auth', alias='PROJECT_NAME')
 
     redis_host: str = Field('redis', alias='REDIS_HOST')
@@ -40,9 +45,6 @@ class Settings(BaseSettings):
             "options": "-c search_path=content",
         }
 
-    class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
-
 
 settings = Settings()
+

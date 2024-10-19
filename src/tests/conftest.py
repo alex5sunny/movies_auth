@@ -1,33 +1,69 @@
-import pytest
-from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+import os
+from dotenv import load_dotenv
+load_dotenv('configs/.env.test')
 
+import pytest_asyncio
+from httpx import AsyncClient
+from sqlalchemy.ext.asyncio import (
+    create_async_engine, AsyncSession, async_sessionmaker
+)
+from sqlalchemy import select, text
+from alembic.config import Config
+from alembic import command
+from typing import AsyncGenerator
+from core.config import settings
 from main import app
 from db.postgres import get_session, Base, engine
 from models.user import User
-from typing import AsyncGenerator
+
+
+
+
+print('AMOKRYSHEV!!!: {}'.format(os.environ.get('POSTGRES_USER')))
+
+dsn = (f'postgresql+asyncpg://{settings.postgres_user}:'
+       f'{settings.postgres_password}@{settings.db_host}:'
+       f'{settings.db_port}/{settings.postgres_db}')
+dsn_adm = (f'postgresql+asyncpg://{settings.postgres_user}:'
+       f'{settings.postgres_password}@{settings.db_host}:'
+       f'{settings.db_port}/postgres')
+
+engine = create_async_engine(dsn, echo=True)
+engine_adm = create_async_engine(dsn_adm, echo=True, isolation_level="AUTOCOMMIT")
 
 # fixture for the db engine
-@pytest.fixture(scope="session")
-async def db_engine():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+@pytest_asyncio.fixture(scope="session")
+async def prepare_db():
+
+    async with engine_adm.connect() as conn:
+        query = text("SELECT 1 FROM pg_database WHERE datname = :db_name")
+        result = await conn.execute(query, {'db_name': settings.postgres_db})
+        exists = result.fetchall()
+        if not exists:
+            await conn.execute(text(f"CREATE DATABASE {settings.postgres_db}"))
+
+    #async with engine.begin() as conn:
+    #    await conn.run_sync(Base.metadata.create_all)
+
+    alembic_cfg = Config("alembic.ini")
+    alembic_cfg.set_main_option('sqlalchemy.url', dsn_adm)
+    command.upgrade(alembic_cfg, "head")
+
     yield engine
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
 
 # fixture for the db session
-@pytest.fixture(scope="function")
-async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
-    async_session = AsyncSession(bind=db_engine)
+@pytest_asyncio.fixture(scope="function")
+async def db_session(prepare_db) -> AsyncGenerator[AsyncSession, None]:
+    async_session = async_sessionmaker(engine)
     try:
         yield async_session
     finally:
         await async_session.close()
 
 # fixture for the FastAPI test client
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     async def override_get_session():
         yield db_session
@@ -40,7 +76,7 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides.clear()
 
 # fixture to create a superuser and get token
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def superuser_token(client: AsyncClient, db_session: AsyncSession):
     await client.post(
         "/signup",
@@ -70,7 +106,7 @@ async def superuser_token(client: AsyncClient, db_session: AsyncSession):
     return token
 
 # fixture to create a regular user and get token
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def regular_user_token(client: AsyncClient):
     await client.post(
         "/signup",

@@ -31,7 +31,7 @@ async def test_create_role_unauthorized(client: AsyncClient,
 
 @pytest.mark.asyncio
 async def test_get_roles(client: AsyncClient):
-    response = await client.get("/roles/")
+    response = await client.get("/api/roles/roles/")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)

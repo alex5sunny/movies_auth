@@ -1,7 +1,6 @@
 import models
 import environs
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
@@ -22,13 +21,14 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = models.Base.metadata
+
 config.set_main_option(
     'sqlalchemy.url',
     (f'postgresql+psycopg2://'
      f'{env.str("POSTGRES_USER", "default")}:'
      f'{env.str("POSTGRES_PASSWORD", "default")}@'
      f'{env.str("DB_HOST", "127.0.0.1")}:'
-     f'{env.int("DB_PORT", 5432)}/{env.str("POSTGRES_DB", "movies_database")}')
+     f'{env.int("DB_PORT", 5434)}/{env.str("POSTGRES_DB", "movies_database")}')
 )
 
 # other values from the config, defined by the needs of env.py,
