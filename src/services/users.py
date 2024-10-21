@@ -25,7 +25,7 @@ from core.config import settings
 
 from models.refresh_token import RefreshToken
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/signin")
 
 
 @dataclass
@@ -39,10 +39,10 @@ class UserService:
                 login=user_data.login
             )
         )
+
         user = None
         if result:
             user = result.scalars().first()
-
         if user and check_password_hash(
                 user.password,
                 user_data.password
@@ -171,10 +171,11 @@ def get_user_service(
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme),
-                           session: AsyncSession = Depends(get_session)
+                           session: AsyncSession = Depends(get_session),
+                           service: UserService = Depends(get_user_service)
                            ) -> User:
     try:
-        data = await UserService.decode_token_jwt(token)
+        data = await service.decode_token_jwt(token)
 
         user_login = data.get('user')
         if user_login is None:
