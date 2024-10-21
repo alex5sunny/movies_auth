@@ -3,7 +3,6 @@ import os
 if not os.path.isfile(os.path.join(os.getcwd(), 'main.py')):
     raise Exception("The file main.py doesnt exits in the context, go to the folder \"src\" before start pytest")
 
-
 from dotenv import load_dotenv
 load_dotenv('../configs/.env.test')
 
@@ -21,9 +20,9 @@ from core.config import settings
 from main import app
 
 TEST_ADM_LOGIN = 'adminuser'
-TEST_ADM_PASS = generate_password_hash('adminpassword')
+TEST_ADM_PASS = 'adminpassword'
 TEST_USR_LOGIN = 'regularuser'
-TEST_USR_PASS = generate_password_hash('regularpassword')
+TEST_USR_PASS = 'regularpassword'
 
 
 #Специально отказались от engine из db.postgres, строка подключения все равно зависит от environment,
@@ -47,7 +46,7 @@ async def prepare_db():
         exists = result.fetchall()
         if not exists:
             # Не защищено от SQL-инъекций, но механизм sqlalchemy.text не позволяет делать такие запросы,
-            # но риск практически нулевой, за то код простой и понятный
+            # а риск практически нулевой, за то код простой и понятный
             await conn.execute(text(f"CREATE DATABASE {settings.postgres_db}"))
 
         alembic_cfg = Config("alembic.ini")
@@ -60,9 +59,9 @@ async def prepare_db():
                      "(gen_random_uuid(), :reg_login, :reg_pass, 'Admin', 'User', NOW(), false)")
         await conn.execute(query, {
             'adm_login': TEST_ADM_LOGIN,
-            'adm_pass': TEST_ADM_PASS,
+            'adm_pass': generate_password_hash(TEST_ADM_PASS),
             'reg_login': TEST_USR_LOGIN,
-            'reg_pass': TEST_USR_PASS,
+            'reg_pass': generate_password_hash(TEST_USR_PASS),
         })
 
     yield engine
@@ -78,7 +77,7 @@ async def prepare_db():
             await conn.execute(query, {'db_name': settings.postgres_db})
 
             # Не защищено от SQL-инъекций, но механизм sqlalchemy.text не позволяет делать такие запросы,
-            # но риск практически нулевой, за то код простой и понятный
+            # а риск практически нулевой, за то код простой и понятный
             await conn.execute(text(f"DROP DATABASE {settings.postgres_db}"))
 
 
@@ -98,6 +97,8 @@ async def superuser_token(prepare_db,  client):
             "password": TEST_ADM_PASS
         }
     )
+
+    print("!!!AMO: {}".format(response.json()))
     token = response.json()["token"]
     return token
 
