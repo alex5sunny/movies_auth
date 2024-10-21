@@ -8,7 +8,7 @@ async def test_create_role_success(client: AsyncClient,
                                    superuser_token: str):
     headers = {"Authorization": f"Bearer {superuser_token}"}
     response = await client.post(
-        "/roles/",
+        "/api/roles/roles/",
         json={"name": "testrole", "description": "Test Role"},
         headers=headers
     )

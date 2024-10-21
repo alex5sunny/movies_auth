@@ -98,7 +98,6 @@ async def superuser_token(prepare_db,  client):
         }
     )
 
-    print("!!!AMO: {}".format(response.json()))
     token = response.json()["token"]
     return token
 
