@@ -68,6 +68,7 @@ async def update_role(
     role_id: UUID,
     role: RoleCreate,
     role_service: RoleService = Depends(get_role_service),
+    current_user: User = Depends(get_current_user)
 ):
     updated_role = await role_service.update_role(role_id=role_id, name=role.name, description=role.description)
     return updated_role
@@ -78,5 +79,6 @@ async def update_role(
 async def delete_role(
     role_id: UUID,
     role_service: RoleService = Depends(get_role_service),
+    current_user: User = Depends(get_current_user)
 ):
     await role_service.delete_role(role_id=role_id)
