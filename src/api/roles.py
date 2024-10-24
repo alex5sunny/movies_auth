@@ -39,7 +39,7 @@ async def create_role(
     new_role = await role_service.create_role(name=role.name, description=role.description)
     return new_role
 
-
+#TODO: то что здесь нет авторизации, это ошибка, кто угодно может увидеть все созданные роли
 @router.get("/roles/", response_model=List[RoleInDB])
 async def get_roles(
     role_service: RoleService = Depends(get_role_service),

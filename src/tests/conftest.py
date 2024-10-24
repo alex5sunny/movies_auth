@@ -2,9 +2,13 @@ import os
 #слегка проверим что pytest запущен из папочки src и сгенерируем понятный текст исключения если это не так
 if not os.path.isfile(os.path.join(os.getcwd(), 'main.py')):
     raise Exception("The file main.py doesnt exits in the context, go to the folder \"src\" before start pytest")
+from datetime import datetime
 
 from dotenv import load_dotenv
 load_dotenv('../configs/.env.test')
+
+with open('diagnosis.txt', 'w') as f:
+    print("{0} pytest приступил к работе".format(datetime.now()), file=f)
 
 import pytest_asyncio
 from httpx import AsyncClient
@@ -25,6 +29,8 @@ TEST_USR_LOGIN = 'regularuser'
 TEST_USR_PASS = 'regularpassword'
 
 
+
+
 #Специально отказались от engine из db.postgres, строка подключения все равно зависит от environment,
 # а код так гораздо понятнее.
 dsn = (f'postgresql+asyncpg://{settings.postgres_user}:'
@@ -41,6 +47,11 @@ engine_adm = create_async_engine(dsn_adm, echo=True, isolation_level="AUTOCOMMIT
 @pytest_asyncio.fixture(scope="session")
 async def prepare_db():
     async with engine_adm.connect() as conn:
+
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} подключились к engine_adm, приступаем к создания базы данных movies_database_test".
+                  format(datetime.now()), file=f)
+
         query = text("SELECT 1 FROM pg_database WHERE datname = :db_name")
         result = await conn.execute(query, {'db_name': settings.postgres_db})
         exists = result.fetchall()
@@ -53,6 +64,9 @@ async def prepare_db():
         alembic_cfg.set_main_option('sqlalchemy.url', dsn)
         command.upgrade(alembic_cfg, "head")
 
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} создана база данных movies_database_test, применены миграции".format(datetime.now()), file=f)
+
     async with engine.begin() as conn:
         query = text("INSERT INTO public.users(id, login, password, first_name, last_name, created_at, is_superuser)\n"
                      "VALUES (gen_random_uuid(), :adm_login, :adm_pass, 'Admin', 'User', NOW(), true),\n"
@@ -64,9 +78,16 @@ async def prepare_db():
             'reg_pass': generate_password_hash(TEST_USR_PASS),
         })
 
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} созданы учетные записи admin user и regular user".format(datetime.now()), file=f)
+
     yield engine
 
     async with engine_adm.connect() as conn:
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} подключились к engine_adm, приступаем к удалению базы данных movies_database_test".
+                  format(datetime.now()), file=f)
+
         query = text("SELECT 1 FROM pg_database WHERE datname = :db_name")
         result = await conn.execute(query, {'db_name': settings.postgres_db})
         exists = result.fetchall()
@@ -80,16 +101,27 @@ async def prepare_db():
             # а риск практически нулевой, за то код простой и понятный
             await conn.execute(text(f"DROP DATABASE {settings.postgres_db}"))
 
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Удалили базу данных movies_database_test".
+                  format(datetime.now()), file=f)
 
 # fixture for the FastAPI test client
 @pytest_asyncio.fixture(scope="session")
 async def client(prepare_db) -> AsyncGenerator[AsyncClient, None]:
     async with AsyncClient(app=app, base_url="http://testserver") as ac:
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Создали и отдали в тесты client: AsyncClient ".format(datetime.now()), file=f)
+
         yield ac
+
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Закрыли client: AsyncClient ".format(datetime.now()), file=f)
 
 # fixture to create a superuser and get token
 @pytest_asyncio.fixture(scope="function")
 async def superuser_token(prepare_db,  client):
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} Приступаем к запросу token для superuser.".format(datetime.now()), file=f)
     response = await client.post(
         "/api/users/signin",
         json={
@@ -99,11 +131,15 @@ async def superuser_token(prepare_db,  client):
     )
 
     token = response.json()["token"]
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} Создали и отдали в тесты token для superuser. token=:[{1}]".format(datetime.now(), token), file=f)
     return token
 
 # fixture to create a regular user and get token
 @pytest_asyncio.fixture(scope="function")
 async def regular_user_token(prepare_db,  client):
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} Приступаем к запросу token для regularuser. token=:[{1}]".format(datetime.now(), token), file=f)
     response = await client.post(
         "/api/users/signin",
         json={
@@ -112,4 +148,6 @@ async def regular_user_token(prepare_db,  client):
         }
     )
     token = response.json()["token"]
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} Создали и отдали в тесты token для regularuser. token=:[{1}]".format(datetime.now(), token), file=f)
     return token

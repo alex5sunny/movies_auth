@@ -1,0 +1,17 @@
+2024-10-24 15:20:16.863278 pytest приступил к работе
+2024-10-24 15:20:18.806219 подключились к engine_adm, приступаем к создания базы данных movies_database_test
+2024-10-24 15:20:19.460639 создана база данных movies_database_test, применены миграции
+2024-10-24 15:20:19.706580 созданы учетные записи admin user и regular user
+2024-10-24 15:20:19.707455 Создали и отдали в тесты client: AsyncClient 
+2024-10-24 15:20:19.708060 Приступаем к запросу token для superuser.
+2024-10-24 15:20:19.908806 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwNGFjMzA4OC0yNjAxLTQ0MmEtYWMyNi0wMDhhNzI3MTc5YjYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE1OjIwOjM0LjkwNzQzNyJ9.RtEJvooOUxB5ImLEGdpElAakrgT49JiggSeM5mHF_04]
+2024-10-24 15:20:19.909951  test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwNGFjMzA4OC0yNjAxLTQ0MmEtYWMyNi0wMDhhNzI3MTc5YjYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE1OjIwOjM0LjkwNzQzNyJ9.RtEJvooOUxB5ImLEGdpElAakrgT49JiggSeM5mHF_04'}]
+2024-10-24 15:20:19.940007 test_create_role_success Получили ответ сервера для теста:[{"id":"17aa0dce-ab09-474e-a72c-7def9f13882f","name":"testrole","description":"Test Role"}]
+2024-10-24 15:20:20.088532 test_get_roles Начинаем запрос для теста
+2024-10-24 15:20:20.717095 Приступаем к запросу token для superuser.
+2024-10-24 15:20:21.400774 test_get_role_not_found Начинаем запрос для теста
+2024-10-24 15:20:21.984763 Приступаем к запросу token для superuser.
+2024-10-24 15:20:22.658370 Приступаем к запросу token для superuser.
+2024-10-24 15:20:23.296563 Закрыли client: AsyncClient 
+2024-10-24 15:20:23.297342 подключились к engine_adm, приступаем к удалению базы данных movies_database_test
+2024-10-24 15:20:23.327314 Удалили базу данных movies_database_test
