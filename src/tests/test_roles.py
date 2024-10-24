@@ -175,7 +175,7 @@ async def test_delete_role_success(client: AsyncClient, superuser_token: str):
 
     with open('diagnosis.txt', 'a') as f:
         print("{0} test_delete_role_success Получили ответ сервера на обновление роли для теста:[{1}]"
-              .format(datetime.now(), response_update.text), file=f)
+              .format(datetime.now(), response_delete.text), file=f)
 
     with open('diagnosis.txt', 'a') as f:
         print("{0} test_delete_role_success Делаем запрос существования удаленной роли: client.get(\"/api/roles/roles/{1}\")"

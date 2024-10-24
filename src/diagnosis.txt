@@ -1,17 +1,124 @@
-2024-10-24 15:20:16.863278 pytest приступил к работе
-2024-10-24 15:20:18.806219 подключились к engine_adm, приступаем к создания базы данных movies_database_test
-2024-10-24 15:20:19.460639 создана база данных movies_database_test, применены миграции
-2024-10-24 15:20:19.706580 созданы учетные записи admin user и regular user
-2024-10-24 15:20:19.707455 Создали и отдали в тесты client: AsyncClient 
-2024-10-24 15:20:19.708060 Приступаем к запросу token для superuser.
-2024-10-24 15:20:19.908806 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwNGFjMzA4OC0yNjAxLTQ0MmEtYWMyNi0wMDhhNzI3MTc5YjYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE1OjIwOjM0LjkwNzQzNyJ9.RtEJvooOUxB5ImLEGdpElAakrgT49JiggSeM5mHF_04]
-2024-10-24 15:20:19.909951  test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwNGFjMzA4OC0yNjAxLTQ0MmEtYWMyNi0wMDhhNzI3MTc5YjYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE1OjIwOjM0LjkwNzQzNyJ9.RtEJvooOUxB5ImLEGdpElAakrgT49JiggSeM5mHF_04'}]
-2024-10-24 15:20:19.940007 test_create_role_success Получили ответ сервера для теста:[{"id":"17aa0dce-ab09-474e-a72c-7def9f13882f","name":"testrole","description":"Test Role"}]
-2024-10-24 15:20:20.088532 test_get_roles Начинаем запрос для теста
-2024-10-24 15:20:20.717095 Приступаем к запросу token для superuser.
-2024-10-24 15:20:21.400774 test_get_role_not_found Начинаем запрос для теста
-2024-10-24 15:20:21.984763 Приступаем к запросу token для superuser.
-2024-10-24 15:20:22.658370 Приступаем к запросу token для superuser.
-2024-10-24 15:20:23.296563 Закрыли client: AsyncClient 
-2024-10-24 15:20:23.297342 подключились к engine_adm, приступаем к удалению базы данных movies_database_test
-2024-10-24 15:20:23.327314 Удалили базу данных movies_database_test
+2024-10-25 00:51:00.546679 pytest приступил к работе
+2024-10-25 00:51:01.640531 при загрузке объекта Settings переменные окружения следующие: {'PATH': '/Users/amokryshev/Documents/students_learning/20241015 Алексей Профи_ру /venv/bin:/Users/amokryshev/.nvm/versions/node/v20.15.1/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin', '__CFBundleIdentifier': 'com.jetbrains.pycharm', 'SHELL': '/bin/zsh', 'TERM': 'xterm-256color', 'USER': 'amokryshev', 'TMPDIR': '/var/folders/4g/pvyzr1zn3wdd_l6t2dgnxkgc0000gn/T/', 'COMMAND_MODE': 'unix2003', 'TERMINAL_EMULATOR': 'JetBrains-JediTerm', 'LOGIN_SHELL': '1', '__INTELLIJ_COMMAND_HISTFILE__': '/Users/amokryshev/Library/Caches/JetBrains/PyCharm2021.3/terminal/history/20241015_Alexey_profi_ru-history', 'SSH_AUTH_SOCK': '/private/tmp/com.apple.launchd.DS85wVyfDh/Listeners', 'XPC_FLAGS': '0x0', 'TERM_SESSION_ID': 'b722f8d4-3a17-4a54-9efe-aa27c9f189b2', '__CF_USER_TEXT_ENCODING': '0x1F5:0x0:0x0', 'LOGNAME': 'amokryshev', 'LC_CTYPE': 'UTF-8', 'XPC_SERVICE_NAME': '0', 'HOME': '/Users/amokryshev', 'SHLVL': '1', 'PWD': '/Users/amokryshev/Documents/students_learning/20241015_Alexey_profi_ru/movies_auth/src', 'OLDPWD': '/Users/amokryshev/Documents/students_learning/20241015_Alexey_profi_ru', 'NVM_DIR': '/Users/amokryshev/.nvm', 'NVM_CD_FLAGS': '-q', 'NVM_BIN': '/Users/amokryshev/.nvm/versions/node/v20.15.1/bin', 'NVM_INC': '/Users/amokryshev/.nvm/versions/node/v20.15.1/include/node', 'PS1': '(venv) %n@%m %1~ %# ', 'VIRTUAL_ENV': '/Users/amokryshev/Documents/students_learning/20241015 Алексей Профи_ру /venv', 'VIRTUAL_ENV_PROMPT': 'venv', '_': '/Library/Frameworks/Python.framework/Versions/3.12/bin/pytest', 'PYTEST_VERSION': '8.3.3', 'POSTGRES_DB': 'movies_database_test', 'POSTGRES_USER': 'default', 'POSTGRES_PASSWORD': 'default', 'DB_HOST': '127.0.0.1', 'DB_PORT': '5434', 'REDIS_HOST': '127.0.0.1', 'REDIS_PORT': '6389', 'SECRET_KEY': 'q!@#j4k3l2m9z8y7x6v5u4t3s2r1p0', 'ACCESS_TOKEN_LIFETIME': '15', 'REFRESH_TOKEN_LIFETIME': '14400', 'ALGORITHM': 'HS256'}
+2024-10-25 00:51:01.654176 при загрузке объекта Settings self.postgres_db следующая: movies_database_test
+2024-10-25 00:51:01.958436 подключились к engine_adm, приступаем к создания базы данных movies_database_test
+2024-10-25 00:51:02.325518 создана база данных movies_database_test, применены миграции
+2024-10-25 00:51:02.578604 созданы учетные записи admin user и regular user
+2024-10-25 00:51:02.578832 запускаем subprocess.Popen
+2024-10-25 00:51:03.653162 при загрузке объекта Settings переменные окружения следующие: {'PATH': '/Users/amokryshev/Documents/students_learning/20241015 Алексей Профи_ру /venv/bin:/Users/amokryshev/.nvm/versions/node/v20.15.1/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin', '__CFBundleIdentifier': 'com.jetbrains.pycharm', 'SHELL': '/bin/zsh', 'TERM': 'xterm-256color', 'USER': 'amokryshev', 'TMPDIR': '/var/folders/4g/pvyzr1zn3wdd_l6t2dgnxkgc0000gn/T/', 'COMMAND_MODE': 'unix2003', 'TERMINAL_EMULATOR': 'JetBrains-JediTerm', 'LOGIN_SHELL': '1', '__INTELLIJ_COMMAND_HISTFILE__': '/Users/amokryshev/Library/Caches/JetBrains/PyCharm2021.3/terminal/history/20241015_Alexey_profi_ru-history', 'SSH_AUTH_SOCK': '/private/tmp/com.apple.launchd.DS85wVyfDh/Listeners', 'XPC_FLAGS': '0x0', 'TERM_SESSION_ID': 'b722f8d4-3a17-4a54-9efe-aa27c9f189b2', '__CF_USER_TEXT_ENCODING': '0x1F5:0x0:0x0', 'LOGNAME': 'amokryshev', 'LC_CTYPE': 'UTF-8', 'XPC_SERVICE_NAME': '0', 'HOME': '/Users/amokryshev', 'SHLVL': '1', 'PWD': '/Users/amokryshev/Documents/students_learning/20241015_Alexey_profi_ru/movies_auth/src', 'OLDPWD': '/Users/amokryshev/Documents/students_learning/20241015_Alexey_profi_ru', 'NVM_DIR': '/Users/amokryshev/.nvm', 'NVM_CD_FLAGS': '-q', 'NVM_BIN': '/Users/amokryshev/.nvm/versions/node/v20.15.1/bin', 'NVM_INC': '/Users/amokryshev/.nvm/versions/node/v20.15.1/include/node', 'PS1': '(venv) %n@%m %1~ %# ', 'VIRTUAL_ENV': '/Users/amokryshev/Documents/students_learning/20241015 Алексей Профи_ру /venv', 'VIRTUAL_ENV_PROMPT': 'venv', '_': '/Library/Frameworks/Python.framework/Versions/3.12/bin/pytest', 'PYTEST_VERSION': '8.3.3', 'POSTGRES_DB': 'movies_database_test', 'POSTGRES_USER': 'default', 'POSTGRES_PASSWORD': 'default', 'DB_HOST': '127.0.0.1', 'DB_PORT': '5434', 'REDIS_HOST': '127.0.0.1', 'REDIS_PORT': '6389', 'SECRET_KEY': 'q!@#j4k3l2m9z8y7x6v5u4t3s2r1p0', 'ACCESS_TOKEN_LIFETIME': '15', 'REFRESH_TOKEN_LIFETIME': '14400', 'ALGORITHM': 'HS256', 'PYTEST_CURRENT_TEST': 'tests/test_roles.py::test_create_role_success (setup)'}
+2024-10-25 00:51:03.657023 при загрузке объекта Settings self.postgres_db следующая: movies_database_test
+2024-10-25 00:51:05.587939 запустили subprocess.Popen
+2024-10-25 00:51:05.640648 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:05.641288 Приступаем к запросу token для superuser.
+2024-10-25 00:51:05.661388 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:05.661520 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:05.754002 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cac3610>
+2024-10-25 00:51:05.842842 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:05.843189 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwZjI4OGFmYS05ODBjLTQzYTAtODRlOC02YWVjMDVhYjQyNzkiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIwLjg0Mjk2MiJ9.hJ-0e9Gsgrq1ajnHdkWbZd7Dx9YNh_nridhJpHiCFjY и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwZjI4OGFmYS05ODBjLTQzYTAtODRlOC02YWVjMDVhYjQyNzkiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDA0OjUxOjA1Ljg0MzA4NiJ9.bhNlMNFnS4GAjez9kphYxUdeiLMsnYo2zfdcfOZIMGg
+2024-10-25 00:51:05.843393 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:05.843797 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10cab6390>
+2024-10-25 00:51:05.843920 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10cab6390> и возвращаем для отправки 
+2024-10-25 00:51:05.845910 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwZjI4OGFmYS05ODBjLTQzYTAtODRlOC02YWVjMDVhYjQyNzkiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIwLjg0Mjk2MiJ9.hJ-0e9Gsgrq1ajnHdkWbZd7Dx9YNh_nridhJpHiCFjY]
+2024-10-25 00:51:05.846880 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIwZjI4OGFmYS05ODBjLTQzYTAtODRlOC02YWVjMDVhYjQyNzkiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIwLjg0Mjk2MiJ9.hJ-0e9Gsgrq1ajnHdkWbZd7Dx9YNh_nridhJpHiCFjY'}]
+2024-10-25 00:51:05.878510 test_create_role_success Получили ответ сервера для теста:[{"id":"55aefc25-0337-46c6-9571-828bcf7a16c1","name":"testrole","description":"Test Role"}]
+2024-10-25 00:51:05.882965 Закрыли client: AsyncClient 
+2024-10-25 00:51:05.928667 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:05.929184 Приступаем к запросу token для regularuser
+2024-10-25 00:51:05.931946 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:05.932062 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:05.938778 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10ca70f00>
+2024-10-25 00:51:06.011730 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:06.012042 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6ImRkNzQwNDEyLTBjZTItNDVlZS05NjM4LTgxYjEyNjU4Mzg4YiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuMDExODMzIn0.WgO0ZakynvdOQfTvTwBskUdDf9OKLU2r0sjbLHhiUNE и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6ImRkNzQwNDEyLTBjZTItNDVlZS05NjM4LTgxYjEyNjU4Mzg4YiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDQ6NTE6MDYuMDExOTE2In0._K52lBVaPBG1LNjOLqwQ8-q-pBtJKV8Gw_jcbPQnTNo
+2024-10-25 00:51:06.012212 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:06.012316 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10ca6bec0>
+2024-10-25 00:51:06.012469 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10ca6bec0> и возвращаем для отправки 
+2024-10-25 00:51:06.013733 Создали и отдали в тесты token для regularuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6ImRkNzQwNDEyLTBjZTItNDVlZS05NjM4LTgxYjEyNjU4Mzg4YiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuMDExODMzIn0.WgO0ZakynvdOQfTvTwBskUdDf9OKLU2r0sjbLHhiUNE]
+2024-10-25 00:51:06.014321 test_create_role_unauthorized Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6ImRkNzQwNDEyLTBjZTItNDVlZS05NjM4LTgxYjEyNjU4Mzg4YiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuMDExODMzIn0.WgO0ZakynvdOQfTvTwBskUdDf9OKLU2r0sjbLHhiUNE'}]
+2024-10-25 00:51:06.025750 test_create_role_unauthorized Получили ответ сервера для теста:[{"detail":"You do not have permission to perform this action"}]
+2024-10-25 00:51:06.026561 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.074987 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.075671 test_get_roles Начинаем запрос для теста
+2024-10-25 00:51:06.083946 test_get_roles Получили ответ сервера для теста:[[{"id":"55aefc25-0337-46c6-9571-828bcf7a16c1","name":"testrole","description":"Test Role"}]]
+2024-10-25 00:51:06.084535 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.119336 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.120266 Приступаем к запросу token для superuser.
+2024-10-25 00:51:06.128632 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:06.128793 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:06.134677 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cb580f0>
+2024-10-25 00:51:06.211127 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:06.211409 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJmN2NhMDVhOS0xODk3LTQyMzEtODAxMy01YWE1MzM5MjQ2NmYiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjIxMTIzMCJ9.Sq7jBIErDjKZNouunyeQC-zL7h68wb12QqsIKtPVBwY и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJmN2NhMDVhOS0xODk3LTQyMzEtODAxMy01YWE1MzM5MjQ2NmYiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDA0OjUxOjA2LjIxMTMxOSJ9.0cB3j-huFBcxQMYFAoSzNmdCSWGJuYYuadIPtPOGZLc
+2024-10-25 00:51:06.211646 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:06.211781 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10cb4be30>
+2024-10-25 00:51:06.211907 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10cb4be30> и возвращаем для отправки 
+2024-10-25 00:51:06.213140 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJmN2NhMDVhOS0xODk3LTQyMzEtODAxMy01YWE1MzM5MjQ2NmYiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjIxMTIzMCJ9.Sq7jBIErDjKZNouunyeQC-zL7h68wb12QqsIKtPVBwY]
+2024-10-25 00:51:06.213826 test_get_role_by_id Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJmN2NhMDVhOS0xODk3LTQyMzEtODAxMy01YWE1MzM5MjQ2NmYiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjIxMTIzMCJ9.Sq7jBIErDjKZNouunyeQC-zL7h68wb12QqsIKtPVBwY'}]
+2024-10-25 00:51:06.236950 test_get_role_by_id Получили ответ сервера для теста:[{"id":"08162468-286c-467d-bbe5-d7cde5ecbb01","name":"getrole","description":"Get Role"}]
+2024-10-25 00:51:06.239867 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.280845 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.282127 test_get_role_not_found Начинаем запрос для теста
+2024-10-25 00:51:06.295499 test_get_role_not_found Получили ответ сервера для теста:[{"detail":"Role not found."}]
+2024-10-25 00:51:06.296120 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.335786 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.336295 Приступаем к запросу token для superuser.
+2024-10-25 00:51:06.338608 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:06.338724 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:06.346001 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cac1e00>
+2024-10-25 00:51:06.423202 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:06.423558 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIxMzdiODRiOC0xZGZmLTQxNzQtYjcxYi05NjM5MjFhZjEwOGIiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjQyMzMzNyJ9.WCMrrdfWbOfm1bh_Mx1epkpepXaAJHEjpK70Ly-DIVI и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIxMzdiODRiOC0xZGZmLTQxNzQtYjcxYi05NjM5MjFhZjEwOGIiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDA0OjUxOjA2LjQyMzQzMyJ9.90psdBz5DjBu41Bi9hRMDUk6uFF9nVnVKM-mCQX-t54
+2024-10-25 00:51:06.423801 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:06.423924 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10ca78410>
+2024-10-25 00:51:06.424047 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10ca78410> и возвращаем для отправки 
+2024-10-25 00:51:06.425311 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIxMzdiODRiOC0xZGZmLTQxNzQtYjcxYi05NjM5MjFhZjEwOGIiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjQyMzMzNyJ9.WCMrrdfWbOfm1bh_Mx1epkpepXaAJHEjpK70Ly-DIVI]
+2024-10-25 00:51:06.425979 test_update_role_success Начинаем запрос создания роли для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIxMzdiODRiOC0xZGZmLTQxNzQtYjcxYi05NjM5MjFhZjEwOGIiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjQyMzMzNyJ9.WCMrrdfWbOfm1bh_Mx1epkpepXaAJHEjpK70Ly-DIVI'}]
+2024-10-25 00:51:06.442997 test_update_role_success Получили ответ сервера на создание роли для теста:[{"id":"c0be50a1-77e9-442f-a554-65b98b3ae9e2","name":"updaterole","description":"Update Role"}]
+2024-10-25 00:51:06.443186 test_update_role_success Начинаем запрос обновления роли c0be50a1-77e9-442f-a554-65b98b3ae9e2 для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiIxMzdiODRiOC0xZGZmLTQxNzQtYjcxYi05NjM5MjFhZjEwOGIiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjQyMzMzNyJ9.WCMrrdfWbOfm1bh_Mx1epkpepXaAJHEjpK70Ly-DIVI'}]
+2024-10-25 00:51:06.462801 test_update_role_success Получили ответ сервера на обновление роли для теста:[{"id":"c0be50a1-77e9-442f-a554-65b98b3ae9e2","name":"updatedrole","description":"Updated Role"}]
+2024-10-25 00:51:06.465713 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.510690 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.511472 Приступаем к запросу token для regularuser
+2024-10-25 00:51:06.515712 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:06.515851 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:06.520679 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cb58a50>
+2024-10-25 00:51:06.594141 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:06.594411 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjQ3NGU0NzUzLTU5MWMtNGExZS05ZDFjLWI0NzdlMDk3MWU4ZiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuNTk0MjQzIn0.5rlw2hzaTwip3o45HrKoXglc41lDUUs5-KjyzbrSH_g и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjQ3NGU0NzUzLTU5MWMtNGExZS05ZDFjLWI0NzdlMDk3MWU4ZiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDQ6NTE6MDYuNTk0MzI1In0.6gCISP8aZ9lVJ9XD5gfCh7vZka_pz4_sDX5ElZ8pisw
+2024-10-25 00:51:06.594577 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:06.594680 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10cb84530>
+2024-10-25 00:51:06.594790 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10cb84530> и возвращаем для отправки 
+2024-10-25 00:51:06.595922 Создали и отдали в тесты token для regularuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjQ3NGU0NzUzLTU5MWMtNGExZS05ZDFjLWI0NzdlMDk3MWU4ZiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuNTk0MjQzIn0.5rlw2hzaTwip3o45HrKoXglc41lDUUs5-KjyzbrSH_g]
+2024-10-25 00:51:06.596482 test_update_role_unauthorized Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjQ3NGU0NzUzLTU5MWMtNGExZS05ZDFjLWI0NzdlMDk3MWU4ZiIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjEuNTk0MjQzIn0.5rlw2hzaTwip3o45HrKoXglc41lDUUs5-KjyzbrSH_g'}]
+2024-10-25 00:51:06.606660 test_update_role_unauthorized Получили ответ сервера для теста:[{"detail":"You do not have permission to perform this action"}]
+2024-10-25 00:51:06.607471 Закрыли client: AsyncClient 
+2024-10-25 00:51:06.685685 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:06.691334 Приступаем к запросу token для superuser.
+2024-10-25 00:51:06.701368 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:06.701567 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:06.709103 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cb5a670>
+2024-10-25 00:51:06.921255 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:06.921898 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjODI4YzhhZi0zNjQ0LTRkN2EtODRhZS0xYzZhZTMyYTM2NDMiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjkyMTQ5MyJ9.rcaSJDq0wgPO-AQbnBwPA2XKgw8cSP5eTusHLLLNdxE и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjODI4YzhhZi0zNjQ0LTRkN2EtODRhZS0xYzZhZTMyYTM2NDMiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDA0OjUxOjA2LjkyMTY5MSJ9.q5uwcxGDKG-XUIaplpru_8YhgHX2M8ZfP3f99nWg_fo
+2024-10-25 00:51:06.922412 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:06.923033 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10cb15130>
+2024-10-25 00:51:06.923246 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10cb15130> и возвращаем для отправки 
+2024-10-25 00:51:06.924840 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjODI4YzhhZi0zNjQ0LTRkN2EtODRhZS0xYzZhZTMyYTM2NDMiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjkyMTQ5MyJ9.rcaSJDq0wgPO-AQbnBwPA2XKgw8cSP5eTusHLLLNdxE]
+2024-10-25 00:51:06.925543 test_delete_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjODI4YzhhZi0zNjQ0LTRkN2EtODRhZS0xYzZhZTMyYTM2NDMiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjkyMTQ5MyJ9.rcaSJDq0wgPO-AQbnBwPA2XKgw8cSP5eTusHLLLNdxE'}]
+2024-10-25 00:51:06.948082 test_delete_role_success Получили ответ сервера на создание роли для теста:[{"id":"740be2b9-ea91-4bfd-ba5d-d12861ba45be","name":"deleterole","description":"Delete Role"}]
+2024-10-25 00:51:06.948474 test_delete_role_success Начинаем запрос обновления роли 740be2b9-ea91-4bfd-ba5d-d12861ba45be для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjODI4YzhhZi0zNjQ0LTRkN2EtODRhZS0xYzZhZTMyYTM2NDMiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAwOjUxOjIxLjkyMTQ5MyJ9.rcaSJDq0wgPO-AQbnBwPA2XKgw8cSP5eTusHLLLNdxE'}]
+2024-10-25 00:51:06.970887 test_delete_role_success Получили ответ сервера на обновление роли для теста:[]
+2024-10-25 00:51:06.971009 test_delete_role_success Делаем запрос существования удаленной роли: client.get("/api/roles/roles/740be2b9-ea91-4bfd-ba5d-d12861ba45be")
+2024-10-25 00:51:06.975816 test_delete_role_success Получили ответ сервера о существовании удаленной роли для теста:[{"detail":"Role not found."}]
+2024-10-25 00:51:06.978843 Закрыли client: AsyncClient 
+2024-10-25 00:51:07.018282 Создали и отдали в тесты client: AsyncClient 
+2024-10-25 00:51:07.019230 Приступаем к запросу token для regularuser
+2024-10-25 00:51:07.026917 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-25 00:51:07.027175 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-25 00:51:07.035278 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10cb5ae90>
+2024-10-25 00:51:07.107656 Проверили пару логин пароль, закомитили сеанс в UserLogin 
+2024-10-25 00:51:07.108074 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjgyNWI5OTU2LWQyYjgtNDA3NC05OGJmLTIzMjFhNWRkYjE5NCIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjIuMTA3NzQ5In0.Z43RJpap9L4vAgdrx2CgI8n81z_bSA9UIa2O_u3I2-8 и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjgyNWI5OTU2LWQyYjgtNDA3NC05OGJmLTIzMjFhNWRkYjE5NCIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDQ6NTE6MDcuMTA3OTQxIn0.UTuZQdw6AgxYwcUoNqrqO2_oZhoKHVDRVNmQdx2zbso
+2024-10-25 00:51:07.108270 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-25 00:51:07.108388 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10cb6e840>
+2024-10-25 00:51:07.108540 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10cb6e840> и возвращаем для отправки 
+2024-10-25 00:51:07.109823 Создали и отдали в тесты token для regularuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjgyNWI5OTU2LWQyYjgtNDA3NC05OGJmLTIzMjFhNWRkYjE5NCIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjIuMTA3NzQ5In0.Z43RJpap9L4vAgdrx2CgI8n81z_bSA9UIa2O_u3I2-8]
+2024-10-25 00:51:07.110423 test_delete_role_unauthorized Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoicmVndWxhcnVzZXIiLCJyb2xlcyI6W10sImp0aSI6IjgyNWI5OTU2LWQyYjgtNDA3NC05OGJmLTIzMjFhNWRkYjE5NCIsImV4cGlyZSI6IjIwMjQtMTAtMjUgMDA6NTE6MjIuMTA3NzQ5In0.Z43RJpap9L4vAgdrx2CgI8n81z_bSA9UIa2O_u3I2-8'}]
+2024-10-25 00:51:07.121437 test_delete_role_unauthorized Получили ответ сервера для теста:[{"detail":"You do not have permission to perform this action"}]
+2024-10-25 00:51:07.122127 Закрыли client: AsyncClient 
+2024-10-25 00:51:07.122911 подключились к engine_adm, приступаем к удалению базы данных movies_database_test
+2024-10-25 00:51:07.160175 Удалили базу данных movies_database_test

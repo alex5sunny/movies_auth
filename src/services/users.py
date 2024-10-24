@@ -34,11 +34,15 @@ class UserService:
     redis: Cache
 
     async def check_user(self, user_data) -> ORJSONResponse:
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Получили в сервисе check_user запрос из API вызываем pg_session".format(datetime.datetime.now()), file=f)
         result = await self.pg_session.execute(
             select(User).options(selectinload(User.roles)).filter_by(
                 login=user_data.login
             )
         )
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Получили из self.pg_session.execute ответ {1}".format(datetime.datetime.now(), result.scalars()), file=f)
 
         user = None
         if result:
@@ -49,7 +53,16 @@ class UserService:
         ):
             self.pg_session.add(UserLogin(user_id=user.id))
             await self.pg_session.commit()
+            with open('diagnosis.txt', 'a') as f:
+                print("{0} Проверили пару логин пароль, закомитили сеанс в UserLogin ".format(datetime.datetime.now()),
+                      file=f)
+
             token_pair = await self.get_token_pair(user)
+
+            with open('diagnosis.txt', 'a') as f:
+                print("{0} Получили из self.get_token_pair ответ {1}".format(datetime.datetime.now(), token_pair),
+                      file=f)
+
             return token_pair
 
     async def save_refresh_token(self, token: str, user) -> None:
@@ -116,9 +129,13 @@ class UserService:
             data,
             settings.refresh_token_lifetime
         )
-
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} внутри get_token_pair сделали токены {1} и {2}".format(datetime.datetime.now(), access_token, refresh_token),
+                  file=f)
         await self.save_refresh_token(refresh_token, user)
-
+        with open('diagnosis.txt', 'a') as f:
+            print("{0} Дождались ответа от self.save_refresh_token, готовимся возвращать".format(datetime.datetime.now()),
+                  file=f)
         return ORJSONResponse({
             'token': access_token,
             'refresh_token': refresh_token,
