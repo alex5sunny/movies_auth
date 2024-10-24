@@ -6,10 +6,10 @@ from fastapi import FastAPI, Request
 from fastapi.responses import ORJSONResponse
 
 from api import users, roles
-from core.config import settings, Settings
+from core.config import settings
 from core.logger import LOGGING
 from db import db_cache
-from db.postgres import create_database, purge_database
+
 from db.redis.redis_cache import RedisCache
 
 

@@ -1,0 +1,220 @@
+FAILED tests/test_roles.py::test_get_roles - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+FAILED tests/test_roles.py::test_get_role_not_found - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+ERROR tests/test_roles.py::test_create_role_unauthorized - RuntimeError: Task <Task pending name='Task-9' coro=<_wrap_async_fixture.<locals>._async_fixture_wrapper.<locals>.setup() running at /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:363> cb=[_run_until_complete_cb() at /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.p...
+ERROR tests/test_roles.py::test_get_role_by_id - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+ERROR tests/test_roles.py::test_update_role_success - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+ERROR tests/test_roles.py::test_update_role_unauthorized - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+ERROR tests/test_roles.py::test_delete_role_success - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+ERROR tests/test_roles.py::test_delete_role_unauthorized - sqlalchemy.exc.InterfaceError: (sqlalchemy.dialects.postgresql.asyncpg.InterfaceError) <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+
+смотрим в лог диагностических принтов:
+2024-10-24 19:10:44.944705 pytest приступил к работе
+2024-10-24 19:10:46.103730 подключились к engine_adm, приступаем к создания базы данных movies_database_test
+2024-10-24 19:10:46.388152 создана база данных movies_database_test, применены миграции
+2024-10-24 19:10:46.601434 созданы учетные записи admin user и regular user
+2024-10-24 19:10:46.602354 Создали и отдали в тесты client: AsyncClient
+2024-10-24 19:10:46.602990 Приступаем к запросу token для superuser.
+2024-10-24 19:10:46.757442 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlMjI2MzdjMi03NTczLTQyN2ItYTAwNS0zZTBiNDY5ZjcwZGYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjExOjAxLjc1NjI3MSJ9.PDqUk-K1g0kuXNkbjBz1N2JqYhgeyhSbwxwg1lfFwbo]
+2024-10-24 19:10:46.758221 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlMjI2MzdjMi03NTczLTQyN2ItYTAwNS0zZTBiNDY5ZjcwZGYiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjExOjAxLjc1NjI3MSJ9.PDqUk-K1g0kuXNkbjBz1N2JqYhgeyhSbwxwg1lfFwbo'}]
+2024-10-24 19:10:46.781497 test_create_role_success Получили ответ сервера для теста:[{"id":"fbcee093-c03a-4443-8afe-812ea41e9b3a","name":"testrole","description":"Test Role"}]
+2024-10-24 19:10:46.783590 Приступаем к запросу token для regularuser
+2024-10-24 19:10:47.413543 test_get_roles Начинаем запрос для теста
+2024-10-24 19:10:47.987799 Приступаем к запросу token для superuser.
+2024-10-24 19:10:48.554551 test_get_role_not_found Начинаем запрос для теста
+2024-10-24 19:10:49.082606 Приступаем к запросу token для superuser.
+2024-10-24 19:10:49.674050 Приступаем к запросу token для regularuser
+2024-10-24 19:10:50.238521 Приступаем к запросу token для superuser.
+2024-10-24 19:10:50.826354 Приступаем к запросу token для regularuser
+2024-10-24 19:10:51.484999 Закрыли client: AsyncClient
+2024-10-24 19:10:51.485417 подключились к engine_adm, приступаем к удалению базы данных movies_database_test
+2024-10-24 19:10:51.508880 Удалили базу данных movies_database_test
+
+Походу зависает на повторном запросе токена в в интерфейсе api/users/signin, при этом в основном ошибка:
+
+<class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+
+спрашиваем что означает эта ошибка у chatgpt:
+
+Ошибка <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is
+in progress в библиотеке asyncpg указывает на попытку выполнения нескольких операций с одной и той же
+сессией или соединением одновременно. Это связано с тем, что соединения asyncpg не поддерживают
+выполнение нескольких операций одновременно.
+
+пока непонятно, спрашиваем у chatgpt под другому - что означает эта ошибка когда используешь asyncclient,
+получаем тот же ответ, короче не знает это chatgpt
+
+Пробуем на шару поменять признаки scope на session, теперь вообще все нафиг упало, а основная ошибка не изменилась
+
+Смотрим какие еще есть scope, узнаем что function это самый низкий уровень изоляции, пробуем перейти на scope "package"
+тоже все лежит, с function было лучше, при этом в диагностическом логе раньше было:
+2024-10-24 19:40:43.842765 Создали и отдали в тесты client: AsyncClient
+2024-10-24 19:40:43.843295 Приступаем к запросу token для superuser.
+2024-10-24 19:40:44.008533 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlNjkwYTA3NC0wMzUzLTQzM2YtYjZhZi1lZjUzYTEwYWM1MTMiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjQwOjU5LjAwNjk1NCJ9.an5TRiw770sHAgA20TxnbI79FVDx4rxZVKSnxU2LshI]
+2024-10-24 19:40:44.009650 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlNjkwYTA3NC0wMzUzLTQzM2YtYjZhZi1lZjUzYTEwYWM1MTMiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjQwOjU5LjAwNjk1NCJ9.an5TRiw770sHAgA20TxnbI79FVDx4rxZVKSnxU2LshI'}]
+2024-10-24 19:10:46.781497 test_create_role_success Получили ответ сервера для теста:[{"id":"fbcee093-c03a-4443-8afe-812ea41e9b3a","name":"testrole","description":"Test Role"}]
+2024-10-24 19:40:44.626047 Приступаем к запросу token для regularuser
+
+
+а теперь стало:
+2024-10-24 19:40:43.842765 Создали и отдали в тесты client: AsyncClient
+2024-10-24 19:40:43.843295 Приступаем к запросу token для superuser.
+2024-10-24 19:40:44.008533 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlNjkwYTA3NC0wMzUzLTQzM2YtYjZhZi1lZjUzYTEwYWM1MTMiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjQwOjU5LjAwNjk1NCJ9.an5TRiw770sHAgA20TxnbI79FVDx4rxZVKSnxU2LshI]
+2024-10-24 19:40:44.009650 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJlNjkwYTA3NC0wMzUzLTQzM2YtYjZhZi1lZjUzYTEwYWM1MTMiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDE5OjQwOjU5LjAwNjk1NCJ9.an5TRiw770sHAgA20TxnbI79FVDx4rxZVKSnxU2LshI'}]
+2024-10-24 19:40:44.626047 Приступаем к запросу token для regularuser
+
+Зависло после запроса на токен, который теперь не из теста идет,а раньше,
+есть мысль что client открытый зависает и дает эту ошибку тк его мы открываем один раз в сессию
+
+Пробуем сделать инициацию client в scope function, не помогло, стало как в первый запуск, но оставим пока так,
+пусть клиент переоткрывает на функцию.
+
+Подумаем логически - если он логинится, значит должен разлогиниваться перед новым логином,
+попробуем вставить вызов на logout в конце фикстур с adminuser и regular user
+
+не помогло, но пусть останется для порядка
+
+Пойдем поднимем сервер   и попробуем потестить через CURL, надо понять, это ошибка на сервере, или это ошибка в AsyncClient
+
+
+Может быть дело в самом классе AsyncClient, попробуем
+
+uvicorn main:app --reload
+curl -X POST http://127.0.0.1:8000/api/users/signin -H "Content-Type: application/json" -d '{"login": "adminuser", "password": "adminpassword"}'
+curl -X POST http://127.0.0.1:8000/api/users/signin -H "Content-Type: application/json" -d '{"login": "adminuser", "password": "adminpassword"}'
+
+Оба раза токены вернулись и ничего не зависло, значит проблема в фикстурах или в AsyncClient,
+добавим явно ожидание закрытия клиента в фикстуре клиента, которая у нас уже на функции
+
+yield ac
+await ac.aclose()
+
+поведение программы явно изменилось, это видно по diagnosis.txt
+...
+2024-10-24 20:17:20.358043 Создали и отдали в тесты client: AsyncClient
+2024-10-24 20:17:20.358334 Приступаем к запросу token для superuser.
+2024-10-24 20:17:20.531235 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiI1MmZlNjc2YS02NGVhLTQyYjgtYWUxYy0wMzVmZmRlMGI1ZWIiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDIwOjE3OjM1LjUyOTY4NiJ9.vbNweAwBIVHNTH3e7xfT8Qd6jLbHTGI_Ux7dcRWiV10]
+2024-10-24 20:17:20.532037 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiI1MmZlNjc2YS02NGVhLTQyYjgtYWUxYy0wMzVmZmRlMGI1ZWIiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDIwOjE3OjM1LjUyOTY4NiJ9.vbNweAwBIVHNTH3e7xfT8Qd6jLbHTGI_Ux7dcRWiV10'}]
+2024-10-24 20:17:20.559915 test_create_role_success Получили ответ сервера для теста:[{"id":"96f605b9-7277-4308-9f80-e990d7e40937","name":"testrole","description":"Test Role"}]
+2024-10-24 20:17:20.564981 Закрыли client: AsyncClient
+2024-10-24 20:17:20.567697 Создали и отдали в тесты client: AsyncClient
+2024-10-24 20:17:20.567988 Приступаем к запросу token для regularuser
+2024-10-24 20:17:21.247574 Закрыли client: AsyncClient
+2024-10-24 20:17:21.248848 Создали и отдали в тесты client: AsyncClient
+2024-10-24 20:17:21.249269 test_get_roles Начинаем запрос для теста
+2024-10-24 20:17:21.830490 Закрыли client: AsyncClient
+...
+
+но на результат это не очень то повлияло, при этом токены второй и далее запросы к signin
+так и не отдаются с ошибкой  cannot perform operation: another operation is in progress
+
+попробуем закрывать клиент await client.aclose() после последнего запроса в каждой из тестовых функций
+
+Не помогает, но состав ошибок поменялся, вернем как было
+
+
+Сходим в гугл, посмотрим что там есть, в гугле прямо нашего случая нет, но там советуют использовать
+некий connection pool, спросим у нейросети как это лучше сделать, нейросеть рабочий вариант не предлагает,
+но предположительно проблема в соединении с базой данных, которое возникает при запуске app через AsyncClient
+
+Попробуем воспользоваться хуком Амана и переопределить объект сессии, и явно указать в engine что
+он должен поддерживать connection pool
+
+engine = create_async_engine(dsn, echo=True, future=True, pool_size=10, max_overflow=20)
+async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+async def testing_get_session_override() -> AsyncSession:
+    async with async_session() as session:
+        #переопределенная сессия
+        try:
+            with open('diagnosis.txt', 'a') as f:
+                print("{0} Создали и отдали в тесты переопределенную сессию".format(datetime.now()), file=f)
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            with open('diagnosis.txt', 'a') as f:
+                print("{0} Завершили переопределенную сессию".format(datetime.now()), file=f)
+            await session.close()
+
+# fixture for the FastAPI test client
+@pytest_asyncio.fixture(scope="function")
+async def client(prepare_db) -> AsyncGenerator[AsyncClient, None]:
+    app.dependency_overrides[get_session] = testing_get_session_override
+    async with AsyncClient(app=app, base_url="http://testserver") as ac:
+
+
+Теперь diagnosis.txt выглядит так:
+
+2024-10-24 21:41:52.966196 pytest приступил к работе
+2024-10-24 21:41:54.663454 подключились к engine_adm, приступаем к создания базы данных movies_database_test
+2024-10-24 21:41:55.179006 создана база данных movies_database_test, применены миграции
+2024-10-24 21:41:55.389050 созданы учетные записи admin user и regular user
+2024-10-24 21:41:55.389834 Создали и отдали в тесты client: AsyncClient
+2024-10-24 21:41:55.390097 Приступаем к запросу token для superuser.
+2024-10-24 21:41:55.391159 Создали и отдали в тесты переопределенную сессию
+2024-10-24 21:41:55.411904 Завершили переопределенную сессию
+2024-10-24 21:41:56.045158 Закрыли client: AsyncClient
+2024-10-24 21:41:56.046592 Создали и отдали в тесты client: AsyncClient
+2024-10-24 21:41:56.046975 Приступаем к запросу token для regularuser
+2024-10-24 21:41:56.047734 Создали и отдали в тесты переопределенную сессию
+2024-10-24 21:41:56.050081 Завершили переопределенную сессию
+2024-10-24 21:41:56.674143 Закрыли client: AsyncClient
+
+Но ошибка cannot perform operation: another operation is in progress сохраняется, при этом даже первый запрос перестал быть успешным
+
+Пойдем ставить диагностически принты внутрь app, надо понять где оно разваливается более детально
+
+Убрал на время свой переопределенный session чтобы протестить ситуацию когда первый запрос завершается успешно, прошли до
+Создали и отдали в тесты client: AsyncClient
+2024-10-24 22:17:20.997586 Приступаем к запросу token для superuser.
+2024-10-24 22:17:21.008612 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-24 22:17:21.008831 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-24 22:17:21.076582 Получили из self.pg_session.execute ответ <sqlalchemy.engine.result.ScalarResult object at 0x10e1a82d0>
+2024-10-24 22:17:21.154679 Проверили пару логин пароль, закомитили сеанс в UserLogin
+2024-10-24 22:17:21.155009 внутри get_token_pair сделали токены eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjMjQ4NTdiZC1hMWIzLTQ1ZTctOTIxMi03NDhmMDU0MDJhMTAiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDIyOjE3OjM2LjE1NDc5MSJ9.hQ-29I7wP4VwOsJvcTjB6lUtNtw3zgOq9qL4MNWq11Q и eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjMjQ4NTdiZC1hMWIzLTQ1ZTctOTIxMi03NDhmMDU0MDJhMTAiLCJleHBpcmUiOiIyMDI0LTEwLTI1IDAyOjE3OjIxLjE1NDkwNiJ9.R9Ur90pwmFaE2q_Frsq7YcMNcTDntjYA9sqa7sI9pI4
+2024-10-24 22:17:21.155201 Дождались ответа от self.save_refresh_token, готовимся возвращать
+2024-10-24 22:17:21.155327 Получили из self.get_token_pair ответ <fastapi.responses.ORJSONResponse object at 0x10da4e330>
+2024-10-24 22:17:21.155436 получили из сервиса ответ <fastapi.responses.ORJSONResponse object at 0x10da4e330> и возвращаем для отправки
+2024-10-24 22:17:21.156347 Создали и отдали в тесты token для superuser. token=:[eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjMjQ4NTdiZC1hMWIzLTQ1ZTctOTIxMi03NDhmMDU0MDJhMTAiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDIyOjE3OjM2LjE1NDc5MSJ9.hQ-29I7wP4VwOsJvcTjB6lUtNtw3zgOq9qL4MNWq11Q]
+2024-10-24 22:17:21.157128 test_create_role_success Начинаем запрос для теста, headers:[{'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW51c2VyIiwicm9sZXMiOltdLCJqdGkiOiJjMjQ4NTdiZC1hMWIzLTQ1ZTctOTIxMi03NDhmMDU0MDJhMTAiLCJleHBpcmUiOiIyMDI0LTEwLTI0IDIyOjE3OjM2LjE1NDc5MSJ9.hQ-29I7wP4VwOsJvcTjB6lUtNtw3zgOq9qL4MNWq11Q'}]
+2024-10-24 22:17:21.190411 test_create_role_success Получили ответ сервера для теста:[{"id":"d5a21f28-27e0-42b9-9030-3d94ac496a39","name":"testrole","description":"Test Role"}]
+2024-10-24 22:17:21.193451 Закрыли client: AsyncClient
+2024-10-24 22:17:21.196235 Создали и отдали в тесты client: AsyncClient
+2024-10-24 22:17:21.196530 Приступаем к запросу token для regularuser
+2024-10-24 22:17:21.198071 Получили на сервере запрос в /signin и переслали в сервис
+2024-10-24 22:17:21.198181 Получили в сервисе check_user запрос из API вызываем pg_session
+2024-10-24 22:17:21.886746 Закрыли client: AsyncClient
+
+при этом в подробном логе ошибка
+ RuntimeError: Task <Task pending name='Task-13' coro=<_wrap_asyncgen_fixture.<locals>._asyncgen_fixture_wrapper.<locals>.setup() running at /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:325> cb=[_run_until_complete_cb() at /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/asyncio/base_events.py:182, WorkerThread.stop()]> got Future <Future pending cb=[Protocol._on_waiter_completed()]> attached to a different loop
+
+Похоже второй вызов сессии создает отдельный event loop и asyncio это не поддерживает, но это не точно, вернем переопределенную сессию,
+на первом же тесте получаем ошибку TypeError: <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x1062261b0> is not a callable object
+Добавим в фикстуры синхронную функцию обертку:
+def get_testing_session_override() -> AsyncSession:
+    return testing_get_session_override
+
+попробовал еще десяток разных вариантов, в лучшем случае получаю тоже самое  <class 'asyncpg.exceptions._base.InterfaceError'>: cannot perform operation: another operation is in progress
+
+Переопределять объект session получается сомнительное решение, проблема остается
+Надо чтото делать с функцией self.pg_session.execute которая и дает эту ошибку при повторном использовании через asynсclient
+
+Попробую перейти на тестирование в отдельном сервере, создавая его фикстурой как субпроцесс
+@pytest_asyncio.fixture(scope="session")
+async def server(prepare_db):
+    process = subprocess.Popen(["uvicorn", "app:app", "--host", "127.0.0.1", "--port", "8000"])
+    time.sleep(1)
+    yield
+    process.terminate()
+
+Помотался с subprocess и назначением environment variables в нем, но запустил в итоге, перенеся вызов процесса в prepare_db
+
+По сути вопрос использования AsyncClient в режиме эмуляции сервера fastAPI не решен и ждет своего героя.
+
+
+
+
+
+
+

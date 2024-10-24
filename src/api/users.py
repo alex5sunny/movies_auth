@@ -66,7 +66,12 @@ async def login_user(
         user_login: UserLogin,
         service: UserService = Depends(get_user_service)
 ) -> ORJSONResponse:
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} Получили на сервере запрос в /signin и переслали в сервис".format(datetime.now()), file=f)
     response = await service.check_user(user_login)
+    with open('diagnosis.txt', 'a') as f:
+        print("{0} получили из сервиса ответ {1} и возвращаем для отправки "
+              .format(datetime.now(), response), file=f)
     return response
 
 

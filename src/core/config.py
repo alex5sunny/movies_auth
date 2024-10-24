@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from pydantic_settings import BaseSettings
 from pydantic import Field
 from logging import config as logging_config
@@ -6,7 +7,9 @@ from core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
 
-
+with open('diagnosis.txt', 'a') as f:
+    print("{0} при загрузке объекта Settings переменные окружения следующие: {1}"
+          .format(datetime.now(), os.environ.copy()), file=f)
 
 class Settings(BaseSettings):
     class Config:
@@ -28,6 +31,8 @@ class Settings(BaseSettings):
     db_host: str = Field('127.0.0.1', alias='DB_HOST')
     db_port: int = Field(5432, alias='DB_PORT')
 
+
+
     secret_key: str = Field('q!@#j4k3l2m9z8y7x6v5u4t3s2r1p0', alias='SECRET_KEY')
     access_token_lifetime: int = Field(15, alias='ACCESS_TOKEN_LIFETIME')
     refresh_token_lifetime: int = Field(14400, alias='REFRESH_TOKEN_LIFETIME')
@@ -47,3 +52,6 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
+with open('diagnosis.txt', 'a') as f:
+    print("{0} при загрузке объекта Settings self.postgres_db следующая: {1}"
+          .format(datetime.now(), settings.postgres_db), file=f)
